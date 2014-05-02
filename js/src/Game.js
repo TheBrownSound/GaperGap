@@ -7,6 +7,7 @@ var Game = (function(){
 
   var dispatcher = createjs.EventDispatcher.initialize(game);
   var stage;
+  var skier;
 
   function startGame(gameObject) {
     //Ticker
@@ -19,6 +20,10 @@ var Game = (function(){
   function sizeCanvas() {
     stage.canvas.width = window.innerWidth;
     stage.canvas.height = window.innerHeight;
+
+    skier.x = stage.canvas.width/2;
+    skier.y = stage.canvas.height/2;
+    
     game.dispatchEvent({type:'stageResized', width:stage.canvas.width, height:stage.canvas.height});
   }
 
@@ -44,6 +49,13 @@ var Game = (function(){
     stage.enableMouseOver(10);
     stage.mouseMoveOutside = false;
     stage.snapToPixelEnabled = true;
+
+    skier = new createjs.Bitmap('assets/skier.png');
+    skier.regX = 25;
+    skier.regY = 110;
+    skier.x = stage.canvas.width/2;
+    skier.y = stage.canvas.height/2;
+    stage.addChild(skier);
 
     startGame();
   }
