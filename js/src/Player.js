@@ -19,6 +19,10 @@ var Player = function() {
   var _tuckRate = 0.2;
   var _maxTuck = 4;
 
+  // Scrub Variables
+  var _scrubbing = false;
+  var _scrubRate = 0.2;
+
   // Turning Variables
   var _direction = null;
   var _turnAngle = 0;
@@ -27,22 +31,27 @@ var Player = function() {
 
   function calculateSpeed() {
     // calculate potential speed momentum
-    var accel = 70-(Math.abs(_turnAngle));
-    accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
-    //console.log("SPEED!: ",accel);
-    _speed += accel;
-
-    if (_speed > _maxSpeed) {
-      _speed = _maxSpeed+calculateSpeedModifier();
-    } else if (_speed < 0) {
-      _speed = 0;
+    if (_scrubbing) {
+      _speed -= _scrubRate;
     } else {
-      _speed += calculateSpeedModifier();
+      var accel = 70-(Math.abs(_turnAngle));
+      accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
+      //console.log("SPEED!: ",accel);
+      _speed += accel;
+      if (_speed > _maxSpeed) {
+        _speed = _maxSpeed;
+      };
+      _speed += calculateTuckModifier();
     }
+
+    if (_speed < 0) {
+      _speed = 0;
+    }
+    
     return _speed;
   }
 
-  function calculateSpeedModifier() {
+  function calculateTuckModifier() {
     //Player tucking?
     if (_tucking && _tuck < _maxTuck) {
       _tuck += _tuckRate; // GO FAST!
@@ -85,13 +94,13 @@ var Player = function() {
     }
   }
 
-  player.tuck = function() {
-    _tucking = true;
+  player.tuckDown = function(bool) {
+    _tucking = bool;
   };
 
-  player.untuck = function() {
-    _tucking = false;
-  };
+  player.scrubSpeed = function(bool) {
+    _scrubbing = bool;
+  }
 
   player.turnLeft = function() {
     _direction = "left";
