@@ -1,15 +1,15 @@
 // Fuse dependencies
 var Game = function() {
   var game = new createjs.Container();
-  var skier = new createjs.Bitmap(GaperGap.assets['skier']);
-  skier.regX = 25;
-  skier.regY = 110;
-
   var momentum = {x: 0, y: 0};
-    
+  var player = new Player();
   var hill = new Hill();
 
-  game.addChild(hill, skier);
+  game.addChild(hill, player);
+
+  function updateGame() {
+    hill.move(momentum.x, momentum.y);
+  }
 
   GaperGap.addEventListener('onKeyDown', function(event) {
     switch(event.key) {
@@ -25,24 +25,29 @@ var Game = function() {
       case 40: //Down
         momentum.y -= 1;
         break;
-      
       default:
         console.log("unhandled keydown! - ", event.key);
     }
   });
 
   GaperGap.addEventListener('stageResized', function(event){
-    skier.x = event.width/2;
-    skier.y = event.height/2;
+    player.x = event.width/2;
+    player.y = event.height/2;
   });
 
   createjs.Ticker.addEventListener("tick", updateGame);
-
-  function updateGame() {
-    hill.move(momentum.x, momentum.y);
-  }
   
   return game;
+};
+var Player = function() {
+  var player = new createjs.Container();
+  var graphic = new createjs.Bitmap(GaperGap.assets['arrow']);
+  graphic.regX = graphic.image.width/2;
+  graphic.regY = graphic.image.height/2;;
+
+  player.addChild(graphic);
+
+  return player;
 };
 var Hill = function(width, height){
   var _position = {x:0, y:0};
@@ -150,7 +155,7 @@ var GaperGap = (function(){
   }
 
   gapergap.init = function(canvasId) {
-    console.log('Game:init')
+    console.log('Game:init');
     stage = gapergap.stage = new createjs.Stage(document.getElementById(canvasId));
 
     //Enable User Inputs
@@ -161,6 +166,7 @@ var GaperGap = (function(){
 
     manifest = [
       {src:"skier.png", id:"skier"},
+      {src:"arrow.png", id:"arrow"},
       {src:"background-repeat.png", id:"bg"}
     ];
 

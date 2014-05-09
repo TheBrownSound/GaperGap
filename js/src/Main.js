@@ -1,5 +1,6 @@
 // Fuse dependencies
 // @depends Game.js
+// @depends Player.js
 // @depends Hill.js
 
 // Parent Game Logic
@@ -61,7 +62,7 @@ var GaperGap = (function(){
   }
 
   gapergap.init = function(canvasId) {
-    console.log('Game:init')
+    console.log('Game:init');
     stage = gapergap.stage = new createjs.Stage(document.getElementById(canvasId));
 
     //Enable User Inputs
@@ -72,6 +73,7 @@ var GaperGap = (function(){
 
     manifest = [
       {src:"skier.png", id:"skier"},
+      {src:"arrow.png", id:"arrow"},
       {src:"background-repeat.png", id:"bg"}
     ];
 
