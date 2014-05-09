@@ -15,3 +15,10 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
+
+#debug {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  pointer-events:none;
+}

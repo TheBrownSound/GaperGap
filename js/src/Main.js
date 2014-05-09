@@ -59,6 +59,7 @@ var GaperGap = (function(){
 
   function tick() {
     stage.update();
+    document.getElementById('fps').innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
   }
 
   gapergap.init = function(canvasId) {

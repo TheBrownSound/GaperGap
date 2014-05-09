@@ -7,6 +7,8 @@ var Game = function() {
 
   game.addChild(hill, player);
 
+  var updateInterval = setInterval(updateGame, Math.floor(1000/60));
+
   function updateGame() {
     hill.move(momentum.x, momentum.y);
   }
@@ -34,8 +36,6 @@ var Game = function() {
     player.x = event.width/2;
     player.y = event.height/2;
   });
-
-  createjs.Ticker.addEventListener("tick", updateGame);
   
   return game;
 };
@@ -152,6 +152,7 @@ var GaperGap = (function(){
 
   function tick() {
     stage.update();
+    document.getElementById('fps').innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
   }
 
   gapergap.init = function(canvasId) {
