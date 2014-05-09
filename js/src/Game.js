@@ -9,25 +9,37 @@ var Game = function() {
   var updateInterval = setInterval(updateGame, Math.floor(1000/60));
 
   function updateGame() {
-    hill.move(momentum.x, momentum.y);
+    player.update();
+    hill.move(player.speed.x, player.speed.y);
   }
 
   GaperGap.addEventListener('onKeyDown', function(event) {
     switch(event.key) {
       case 37: //Left
-        momentum.x += 1;
+        player.turnRight();
         break;
       case 38: //Up
-        momentum.y += 1;
+        player.scrubSpeed();
         break;
       case 39: //Right
-        momentum.x -= 1;
+        player.turnLeft();
         break;
       case 40: //Down
-        momentum.y -= 1;
+        player.tuckDown();
         break;
       default:
         console.log("unhandled keydown! - ", event.key);
+    }
+  });
+
+  GaperGap.addEventListener('onKeyUp', function(event) {
+    switch(event.key) {
+      case 37: //Left
+      case 39: //Right
+        player.stopTurning();
+        break;
+      default:
+        console.log("unhandled keyup! - ", event.key);
     }
   });
 
