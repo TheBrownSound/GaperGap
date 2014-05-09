@@ -7,10 +7,33 @@ var Game = function() {
   game.addChild(hill, player);
 
   var updateInterval = setInterval(updateGame, Math.floor(1000/60));
+  var viewInterval = setInterval(updateView, 500);
+
+  function updateView() {
+    var totalSpeed = Math.sqrt(player.speed.x * player.speed.x + player.speed.y * player.speed.y);
+    document.getElementById('speed').innerHTML = "Speed: "+totalSpeed;
+    //var scale = Math.floor(player.maxSpeed-totalSpeed)/(player.maxSpeed*2)+0.5;
+    if (totalSpeed > 10) {
+      changeScale(0.5);
+    } else if (totalSpeed > 6) {
+      changeScale(0.75);
+    } else {
+      changeScale(1);
+    }
+  }
 
   function updateGame() {
     player.update();
     hill.move(player.speed.x, player.speed.y);
+  }
+
+  function changeScale(perc) {
+    if (perc != game.scaleX) {
+      createjs.Tween.get(game, {override:true}).to({
+        scaleX:perc,
+        scaleY:perc
+      }, 4000, createjs.Ease.sineOut);
+    }
   }
 
   GaperGap.addEventListener('onKeyDown', function(event) {
@@ -50,8 +73,8 @@ var Game = function() {
   });
 
   GaperGap.addEventListener('stageResized', function(event){
-    player.x = event.width/2;
-    player.y = event.height/2;
+    game.x = event.width/2;
+    game.y = event.height/2;
   });
   
   return game;

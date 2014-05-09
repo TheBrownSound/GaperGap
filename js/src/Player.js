@@ -126,5 +126,9 @@ var Player = function() {
     };
   });
 
+  player.__defineGetter__('maxSpeed', function(){
+    return _maxSpeed+_maxTuck;
+  });
+
   return player;
 };
