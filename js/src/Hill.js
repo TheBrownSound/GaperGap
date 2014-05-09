@@ -1,10 +1,16 @@
 var Hill = function(player){
   var _width = 300;
   var _height = 300;
+
+  var features = [];
+
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
+  var featureWrapper = new createjs.Container();
 
-  hill.addChild(snow, player);
+  hill.addChild(snow, player, featureWrapper);
+
+  var featureInterval = setInterval(addFeature, 500);
 
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
@@ -14,10 +20,24 @@ var Hill = function(player){
     snow.graphics.endFill();
   }
 
+  function addFeature() {
+    console.log('addFeature');
+    var tree = new createjs.Bitmap(GaperGap.assets['tree']);
+    features.push(tree);
+    tree.x = (-featureWrapper.x)+GaperGap.utils.getRandomInt(-_width*2,_width*2);
+    console.log('height: ', _height);
+    tree.y = (-featureWrapper.y)+(_height*2);
+    tree.regX = tree.image.width/2;
+    tree.regY = tree.image.height;
+    featureWrapper.addChild(tree);
+  }
+
   hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
     snow.x = (snow.x+player.speed.x) % 120;
     snow.y = (snow.y+player.speed.y) % 120;
+    featureWrapper.x += player.speed.x;
+    featureWrapper.y += player.speed.y;
   };
 
   hill.__defineSetter__('height', function(value){

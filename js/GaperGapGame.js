@@ -1,4 +1,34 @@
 // Fuse dependencies
+var Utils = function() {
+  var utils = {};
+
+  utils.getTotalSpeed = function(xSpeed, ySpeed) {
+    return Math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed);
+  }
+
+  utils.getRandomInt = function(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  utils.getRandomFloat = function(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  utils.yesNo = function() {
+    return (this.getRandomInt(0,1) == 1) ? true:false;
+  }
+
+  utils.removeFromArray = function(array, item) {
+    var itemIndex = array.indexOf(item);
+    if (itemIndex >= 0) {
+      array.splice(item, 1);
+      return true;
+    }
+    return false;
+  }
+
+  return utils;
+};
 var Game = function() {
   var game = new createjs.Container();
   var momentum = {x: 0, y: 0};
@@ -11,7 +41,7 @@ var Game = function() {
   var viewInterval = setInterval(updateView, 500);
 
   function updateView() {
-    var totalSpeed = Math.sqrt(player.speed.x * player.speed.x + player.speed.y * player.speed.y);
+    var totalSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
     document.getElementById('speed').innerHTML = "Speed: "+totalSpeed;
     //var scale = Math.floor(player.maxSpeed-totalSpeed)/(player.maxSpeed*2)+0.5;
     if (totalSpeed > 10) {
@@ -76,6 +106,8 @@ var Game = function() {
   GaperGap.addEventListener('stageResized', function(event){
     game.x = event.width/2;
     game.y = event.height/2;
+    hill.width = event.width;
+    hill.height = event.height;
   });
   
   return game;
@@ -217,10 +249,16 @@ var Player = function() {
 var Hill = function(player){
   var _width = 300;
   var _height = 300;
+
+  var features = [];
+
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
+  var featureWrapper = new createjs.Container();
 
-  hill.addChild(snow, player);
+  hill.addChild(snow, player, featureWrapper);
+
+  var featureInterval = setInterval(addFeature, 500);
 
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
@@ -230,10 +268,24 @@ var Hill = function(player){
     snow.graphics.endFill();
   }
 
+  function addFeature() {
+    console.log('addFeature');
+    var tree = new createjs.Bitmap(GaperGap.assets['tree']);
+    features.push(tree);
+    tree.x = (-featureWrapper.x)+GaperGap.utils.getRandomInt(-_width*2,_width*2);
+    console.log('height: ', _height);
+    tree.y = (-featureWrapper.y)+(_height*2);
+    tree.regX = tree.image.width/2;
+    tree.regY = tree.image.height;
+    featureWrapper.addChild(tree);
+  }
+
   hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
     snow.x = (snow.x+player.speed.x) % 120;
     snow.y = (snow.y+player.speed.y) % 120;
+    featureWrapper.x += player.speed.x;
+    featureWrapper.y += player.speed.y;
   };
 
   hill.__defineSetter__('height', function(value){
@@ -262,7 +314,9 @@ var Hill = function(player){
 
 // Parent Game Logic
 var GaperGap = (function(){
-  var gapergap = {};
+  var gapergap = {
+    utils: new Utils()
+  };
   var _preloadAssets = [];
   var _canvas;
 
@@ -275,11 +329,11 @@ var GaperGap = (function(){
   }
 
   function startGame(gameObject) {
-    console.log('Game:startGame')
+    console.log('Game:startGame');
     gapergap.assets = {};
     for (var i = 0; i < _preloadAssets.length; i++) {
       gapergap.assets[_preloadAssets[i].id] = preloader.getResult(_preloadAssets[i].id);
-    };
+    }
     console.log('Game.assets', gapergap.assets);
 
     game = new Game();
@@ -331,6 +385,7 @@ var GaperGap = (function(){
 
     manifest = [
       {src:"skier.png", id:"skier"},
+      {src:"tree.png", id:"tree"},
       {src:"arrow.png", id:"arrow"},
       {src:"background-repeat.png", id:"bg"}
     ];
