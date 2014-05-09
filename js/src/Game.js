@@ -1,75 +1,45 @@
-// Fuse dependencies
+var Game = function() {
+  var game = new createjs.Container();
+  var skier = new createjs.Bitmap(GaperGap.assets['skier']);
+  skier.regX = 25;
+  skier.regY = 110;
 
-// Parent Game Logic
-var Game = (function(){
-  var game = {}
-  var _canvas;
-
-  var dispatcher = createjs.EventDispatcher.initialize(game);
-  var stage;
-  var skier;
-
-  function startGame(gameObject) {
-    //Ticker
-    createjs.Ticker.setFPS(60);
-    createjs.Ticker.addEventListener("tick", tick);
-
-    sizeCanvas();
-  }
-
-  function sizeCanvas() {
-    stage.canvas.width = window.innerWidth;
-    stage.canvas.height = window.innerHeight;
-
-    skier.x = stage.canvas.width/2;
-    skier.y = stage.canvas.height/2;
+  var momentum = {x: 0, y: 0};
     
-    game.dispatchEvent({type:'stageResized', width:stage.canvas.width, height:stage.canvas.height});
-  }
+  var hill = new Hill();
 
-  function onKeyDown(event) {
-    switch(event.keyCode) {
+  game.addChild(hill, skier);
+
+  GaperGap.addEventListener('onKeyDown', function(event) {
+    switch(event.key) {
+      case 37: //Left
+        momentum.x += 1;
+        break;
+      case 38: //Up
+        momentum.y += 1;
+        break;
+      case 39: //Right
+        momentum.x -= 1;
+        break;
+      case 40: //Down
+        momentum.y -= 1;
+        break;
+      
       default:
-        game.dispatchEvent({type:'onKeyDown', key:event.keyCode});
+        console.log("unhandled keydown! - ", event.key);
     }
-  }
-
-  function onKeyUp(event) {
-    switch(event.keyCode) {
-      default:
-        game.dispatchEvent({type:'onKeyUp', key:event.keyCode});
-    }
-  }
-
-  game.init = function(canvasId) {
-    stage = game.stage = new createjs.Stage(document.getElementById(canvasId));
-
-    //Enable User Inputs
-    createjs.Touch.enable(stage);
-    stage.enableMouseOver(10);
-    stage.mouseMoveOutside = false;
-    stage.snapToPixelEnabled = true;
-
-    skier = new createjs.Bitmap('assets/skier.png');
-    skier.regX = 25;
-    skier.regY = 110;
-    skier.x = stage.canvas.width/2;
-    skier.y = stage.canvas.height/2;
-    stage.addChild(skier);
-
-    startGame();
-  }
-
-  function tick() {
-    stage.update();
-  }
-
-  $(document).ready(function(){
-    console.log('DOCUMENT READY');
-    window.onresize = sizeCanvas;
-    window.onkeydown = onKeyDown;
-    window.onkeyup = onKeyUp;
   });
 
+  GaperGap.addEventListener('stageResized', function(event){
+    skier.x = event.width/2;
+    skier.y = event.height/2;
+  });
+
+  createjs.Ticker.addEventListener("tick", updateGame);
+
+  function updateGame() {
+    hill.move(momentum.x, momentum.y);
+  }
+  
   return game;
-})();
+};

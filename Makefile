@@ -1,6 +1,6 @@
-sourceFile = js/src/Game.js
+sourceFile = js/src/Main.js
 outputDir = js/
-name = GaperGapGame.js
+name = GaperGapGame
 
 compile:
 	fuse -i $(sourceFile) -o $(outputDir)$(name).js
