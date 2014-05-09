@@ -19,13 +19,13 @@ var Game = function() {
         player.turnRight();
         break;
       case 38: //Up
-        player.scrubSpeed();
+        //player.scrubSpeed();
         break;
       case 39: //Right
         player.turnLeft();
         break;
       case 40: //Down
-        player.tuckDown();
+        player.tuck();
         break;
       default:
         console.log("unhandled keydown! - ", event.key);
@@ -37,6 +37,9 @@ var Game = function() {
       case 37: //Left
       case 39: //Right
         player.stopTurning();
+        break;
+      case 40:
+        player.untuck();
         break;
       default:
         console.log("unhandled keyup! - ", event.key);

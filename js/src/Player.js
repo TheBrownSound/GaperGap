@@ -8,13 +8,50 @@ var Player = function() {
 
   var _acceleration = 30;//updates it takes to get to full greatest turn amount
   
+  // Speed Variables
   var _speed = 0;
   var _speedMomentum = 0;
   var _maxSpeed = 8;
+
+  // Tuck Variables
+  var _tucking = false;
+  var _tuck = 0;
+  var _tuckRate = 0.2;
+  var _maxTuck = 4;
+
+  // Turning Variables
   var _direction = null;
   var _turnAngle = 0;
   var _turnMomentum = 0;
   var _maxTurnAngle = 90;
+
+  function calculateSpeed() {
+    // calculate potential speed momentum
+    var accel = 70-(Math.abs(_turnAngle));
+    accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
+    //console.log("SPEED!: ",accel);
+    _speed += accel;
+
+    if (_speed > _maxSpeed) {
+      _speed = _maxSpeed+calculateSpeedModifier();
+    } else if (_speed < 0) {
+      _speed = 0;
+    } else {
+      _speed += calculateSpeedModifier();
+    }
+    return _speed;
+  }
+
+  function calculateSpeedModifier() {
+    //Player tucking?
+    if (_tucking && _tuck < _maxTuck) {
+      _tuck += _tuckRate; // GO FAST!
+    } else if (_tuck > 0) {
+      _tuck -= _tuckRate;
+    }
+
+    return _tuck;
+  }
 
   function calculateTurnAngle() {
     // Should be called at update intervals
@@ -24,27 +61,14 @@ var Player = function() {
     if (_direction == "right" || (!_direction && _turnMomentum < 0)) {
       increaseTurnRate();
     }
-    _turnAngle += (_turnMomentum/_acceleration)*4;
+    var turnSpeed = (_tucking) ? 2 : 4; // longer turns when tucking
+    _turnAngle += (_turnMomentum/_acceleration)*turnSpeed;
     if (_turnAngle > _maxTurnAngle) {
       _turnAngle = _maxTurnAngle;
     } else if (_turnAngle < -_maxTurnAngle) {
       _turnAngle = -_maxTurnAngle;
     }
     return _turnAngle;
-  }
-
-  function calculateSpeed() {
-    // calculate potential speed momentum
-    var accel = 70-(Math.abs(_turnAngle));
-    accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
-    //console.log("SPEED!: ",accel);
-    _speed += accel;
-    if (_speed > _maxSpeed) {
-      _speed = _maxSpeed;
-    } else if (_speed < 0) {
-      _speed = 0;
-    }
-    return _speed;
   }
 
   function increaseTurnRate() {
@@ -60,6 +84,14 @@ var Player = function() {
       _turnMomentum = -_acceleration;
     }
   }
+
+  player.tuck = function() {
+    _tucking = true;
+  };
+
+  player.untuck = function() {
+    _tucking = false;
+  };
 
   player.turnLeft = function() {
     _direction = "left";
