@@ -8,7 +8,7 @@ var Hill = function(width, height){
   hill.addChild(snow);
 
   function drawHill() {
-    var crossWidth = _width*3 + _height*3;
+    var crossWidth = _width*2 + _height*2;
     snow.graphics.clear();
     snow.graphics.beginBitmapFill(GaperGap.assets['bg']);
     snow.graphics.drawRect(-crossWidth, -crossWidth, crossWidth*2, crossWidth*2);
