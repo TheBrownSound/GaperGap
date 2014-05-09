@@ -2,7 +2,7 @@ var Player = function() {
   var player = new createjs.Container();
   var graphic = new createjs.Bitmap(GaperGap.assets['arrow']);
   graphic.regX = graphic.image.width/2;
-  graphic.regY = graphic.image.height/2;;
+  graphic.regY = graphic.image.height/2;
 
   player.addChild(graphic);
 
@@ -40,7 +40,7 @@ var Player = function() {
       _speed += accel;
       if (_speed > _maxSpeed) {
         _speed = _maxSpeed;
-      };
+      }
       _speed += calculateTuckModifier();
     }
 
@@ -100,7 +100,7 @@ var Player = function() {
 
   player.scrubSpeed = function(bool) {
     _scrubbing = bool;
-  }
+  };
 
   player.turnLeft = function() {
     _direction = "left";
