@@ -1,11 +1,14 @@
 // Fuse dependencies
+// @depends Utils.js
 // @depends Game.js
 // @depends Player.js
 // @depends Hill.js
 
 // Parent Game Logic
 var GaperGap = (function(){
-  var gapergap = {};
+  var gapergap = {
+    utils: new Utils()
+  };
   var _preloadAssets = [];
   var _canvas;
 
@@ -18,11 +21,11 @@ var GaperGap = (function(){
   }
 
   function startGame(gameObject) {
-    console.log('Game:startGame')
+    console.log('Game:startGame');
     gapergap.assets = {};
     for (var i = 0; i < _preloadAssets.length; i++) {
       gapergap.assets[_preloadAssets[i].id] = preloader.getResult(_preloadAssets[i].id);
-    };
+    }
     console.log('Game.assets', gapergap.assets);
 
     game = new Game();
@@ -74,6 +77,7 @@ var GaperGap = (function(){
 
     manifest = [
       {src:"skier.png", id:"skier"},
+      {src:"tree.png", id:"tree"},
       {src:"arrow.png", id:"arrow"},
       {src:"background-repeat.png", id:"bg"}
     ];
