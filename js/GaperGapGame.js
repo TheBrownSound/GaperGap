@@ -3,9 +3,9 @@ var Game = function() {
   var game = new createjs.Container();
   var momentum = {x: 0, y: 0};
   var player = new Player();
-  var hill = new Hill();
+  var hill = new Hill(player);
 
-  game.addChild(hill, player);
+  game.addChild(hill);
 
   var updateInterval = setInterval(updateGame, Math.floor(1000/60));
   var viewInterval = setInterval(updateView, 500);
@@ -25,7 +25,7 @@ var Game = function() {
 
   function updateGame() {
     player.update();
-    hill.move(player.speed.x, player.speed.y);
+    hill.update();
   }
 
   function changeScale(perc) {
@@ -214,14 +214,13 @@ var Player = function() {
 
   return player;
 };
-var Hill = function(width, height){
-  var _position = {x:0, y:0};
+var Hill = function(player){
   var _width = 300;
   var _height = 300;
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
 
-  hill.addChild(snow);
+  hill.addChild(snow, player);
 
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
@@ -231,10 +230,10 @@ var Hill = function(width, height){
     snow.graphics.endFill();
   }
 
-  hill.move = function(x, y) {
+  hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
-    snow.x = (snow.x+x) % 120;
-    snow.y = (snow.y+y) % 120;
+    snow.x = (snow.x+player.speed.x) % 120;
+    snow.y = (snow.y+player.speed.y) % 120;
   };
 
   hill.__defineSetter__('height', function(value){

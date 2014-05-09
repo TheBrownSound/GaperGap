@@ -2,9 +2,9 @@ var Game = function() {
   var game = new createjs.Container();
   var momentum = {x: 0, y: 0};
   var player = new Player();
-  var hill = new Hill();
+  var hill = new Hill(player);
 
-  game.addChild(hill, player);
+  game.addChild(hill);
 
   var updateInterval = setInterval(updateGame, Math.floor(1000/60));
   var viewInterval = setInterval(updateView, 500);
@@ -24,7 +24,7 @@ var Game = function() {
 
   function updateGame() {
     player.update();
-    hill.move(player.speed.x, player.speed.y);
+    hill.update();
   }
 
   function changeScale(perc) {
