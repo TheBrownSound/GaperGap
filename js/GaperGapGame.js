@@ -230,6 +230,13 @@ var Player = function() {
 
   player.update = function() {
     player.rotation = calculateTurnAngle();
+    if (_tucking) {
+      graphic.scaleY = 1.2;
+    } else if (_scrubbing) {
+      graphic.scaleY = 0.8;
+    } else {
+      graphic.scaleY = 1;
+    }
     calculateSpeed();
   };
 
