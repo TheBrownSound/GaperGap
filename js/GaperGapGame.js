@@ -120,7 +120,7 @@ var Player = function() {
 
   player.addChild(graphic);
 
-  var _acceleration = 30;//updates it takes to get to full greatest turn amount
+  var _acceleration = 10;//updates it takes to get to full greatest turn amount
   
   // Speed Variables
   var _speed = 0;
@@ -148,7 +148,7 @@ var Player = function() {
     if (_scrubbing) {
       _speed -= _scrubRate;
     } else {
-      var accel = 70-(Math.abs(_turnAngle));
+      var accel = 85-(Math.abs(_turnAngle));
       accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       //console.log("SPEED!: ",accel);
       _speed += accel;
@@ -270,7 +270,7 @@ var Hill = function(player){
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
     snow.graphics.clear();
-    snow.graphics.beginBitmapFill(GaperGap.assets['bg']);
+    snow.graphics.beginBitmapFill(GaperGap.assets['hill-background']);
     snow.graphics.drawRect(-crossWidth, -crossWidth, crossWidth*2, crossWidth*2);
     snow.graphics.endFill();
   }
@@ -289,8 +289,8 @@ var Hill = function(player){
 
   hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
-    snow.x = (snow.x+player.speed.x) % 120;
-    snow.y = (snow.y+player.speed.y) % 120;
+    snow.x = (snow.x+player.speed.x) % 400;
+    snow.y = (snow.y+player.speed.y) % 400;
     featureWrapper.x += player.speed.x;
     featureWrapper.y += player.speed.y;
   };
@@ -394,7 +394,7 @@ var GaperGap = (function(){
       {src:"skier.png", id:"skier"},
       {src:"tree.png", id:"tree"},
       {src:"arrow.png", id:"arrow"},
-      {src:"background-repeat.png", id:"bg"}
+      {src:"hill_background.png", id:"hill-background"}
     ];
 
     preloader = new createjs.LoadQueue(true, "assets/");

@@ -6,7 +6,7 @@ var Player = function() {
 
   player.addChild(graphic);
 
-  var _acceleration = 30;//updates it takes to get to full greatest turn amount
+  var _acceleration = 10;//updates it takes to get to full greatest turn amount
   
   // Speed Variables
   var _speed = 0;
@@ -34,7 +34,7 @@ var Player = function() {
     if (_scrubbing) {
       _speed -= _scrubRate;
     } else {
-      var accel = 70-(Math.abs(_turnAngle));
+      var accel = 85-(Math.abs(_turnAngle));
       accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       //console.log("SPEED!: ",accel);
       _speed += accel;

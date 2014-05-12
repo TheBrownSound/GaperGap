@@ -15,7 +15,7 @@ var Hill = function(player){
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
     snow.graphics.clear();
-    snow.graphics.beginBitmapFill(GaperGap.assets['bg']);
+    snow.graphics.beginBitmapFill(GaperGap.assets['hill-background']);
     snow.graphics.drawRect(-crossWidth, -crossWidth, crossWidth*2, crossWidth*2);
     snow.graphics.endFill();
   }
@@ -34,8 +34,8 @@ var Hill = function(player){
 
   hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
-    snow.x = (snow.x+player.speed.x) % 120;
-    snow.y = (snow.y+player.speed.y) % 120;
+    snow.x = (snow.x+player.speed.x) % 400;
+    snow.y = (snow.y+player.speed.y) % 400;
     featureWrapper.x += player.speed.x;
     featureWrapper.y += player.speed.y;
   };
