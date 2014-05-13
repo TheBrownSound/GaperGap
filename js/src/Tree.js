@@ -3,23 +3,23 @@ var Tree = function() {
   var hasBeenHit = false;
 
   var tree = new createjs.Container();
-  var graphic = new createjs.Bitmap(GaperGap.assets['tree']);
-  var hitContainer = new createjs.Container();
-  var hitArea = new createjs.Shape();
+  var trunk = new createjs.Bitmap(GaperGap.assets['trunk']);
+  var branches = new createjs.Bitmap(GaperGap.assets['tree']);
 
-  graphic.regX = graphic.image.width/2;
-  graphic.regY = graphic.image.height;
+  trunk.regX = trunk.image.width/2;
+  trunk.regY = trunk.image.height;
+  branches.regX = branches.image.width/2;
+  branches.regY = branches.image.height*0.9;
 
-  hitArea.graphics.beginFill("red").drawCircle(0, 0, hitSize/2);
-  hitContainer.addChild(hitArea);
-  tree.addChild(hitContainer, graphic);
-  hitContainer.cache(-hitSize/2,-hitSize/2,hitSize,hitSize);
+  branches.y = -trunk.image.height*0.7;
+
+  tree.addChild(trunk, branches);
 
   tree.hit = function(collision) {
     if (!hasBeenHit) {
       var coords = tree.globalToLocal(collision.x, collision.y);
       var impact = -(coords.x);
-      createjs.Tween.get(graphic, {override:false})
+      createjs.Tween.get(branches, {override:false})
         .to({rotation:impact/2}, 100, createjs.Ease.circIn)
         .to({rotation:impact/4}, 3000, createjs.Ease.elasticOut);
       hasBeenHit = true;
@@ -27,7 +27,7 @@ var Tree = function() {
   };
 
   tree.__defineGetter__('hitArea', function(){
-    return graphic;
+    return trunk;
   });
 
   return tree;

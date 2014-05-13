@@ -78,6 +78,7 @@ var GaperGap = (function(){
 
     manifest = [
       {src:"skier.png", id:"skier"},
+      {src:"trunk.png", id:"trunk"},
       {src:"tree.png", id:"tree"},
       {src:"arrow.png", id:"arrow"},
       {src:"hill_background.png", id:"hill-background"}
