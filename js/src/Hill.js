@@ -35,6 +35,14 @@ var Hill = function(player){
     snow.y = (snow.y+player.speed.y) % 400;
     featureWrapper.x += player.speed.x;
     featureWrapper.y += player.speed.y;
+
+    for (var feature in features) {
+      var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
+      if (hit) {
+        console.log('hit: ', hit);
+        player.crash();
+      }
+    }
   };
 
   hill.__defineSetter__('height', function(value){

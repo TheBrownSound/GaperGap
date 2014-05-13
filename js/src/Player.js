@@ -114,6 +114,10 @@ var Player = function() {
     _direction = false;
   };
 
+  player.crash = function() {
+    _speed = 0;
+  };
+
   player.update = function() {
     player.rotation = calculateTurnAngle();
     if (_tucking) {
@@ -135,6 +139,10 @@ var Player = function() {
 
   player.__defineGetter__('maxSpeed', function(){
     return _maxSpeed+_maxTuck;
+  });
+
+  player.__defineGetter__('hitArea', function(){
+    return graphic;
   });
 
   return player;

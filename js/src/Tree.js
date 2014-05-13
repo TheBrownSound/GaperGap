@@ -15,7 +15,7 @@ var Tree = function() {
   hitContainer.cache(-hitSize/2,-hitSize/2,hitSize,hitSize);
 
   tree.__defineGetter__('hitArea', function(){
-    return hitContainer;
+    return graphic;
   });
 
   return tree;

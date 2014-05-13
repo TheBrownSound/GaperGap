@@ -228,6 +228,10 @@ var Player = function() {
     _direction = false;
   };
 
+  player.crash = function() {
+    _speed = 0;
+  };
+
   player.update = function() {
     player.rotation = calculateTurnAngle();
     if (_tucking) {
@@ -249,6 +253,10 @@ var Player = function() {
 
   player.__defineGetter__('maxSpeed', function(){
     return _maxSpeed+_maxTuck;
+  });
+
+  player.__defineGetter__('hitArea', function(){
+    return graphic;
   });
 
   return player;
@@ -290,6 +298,14 @@ var Hill = function(player){
     snow.y = (snow.y+player.speed.y) % 400;
     featureWrapper.x += player.speed.x;
     featureWrapper.y += player.speed.y;
+
+    for (var feature in features) {
+      var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
+      if (hit) {
+        console.log('hit: ', hit);
+        player.crash();
+      }
+    }
   };
 
   hill.__defineSetter__('height', function(value){
@@ -332,7 +348,7 @@ var Tree = function() {
   hitContainer.cache(-hitSize/2,-hitSize/2,hitSize,hitSize);
 
   tree.__defineGetter__('hitArea', function(){
-    return hitContainer;
+    return graphic;
   });
 
   return tree;
