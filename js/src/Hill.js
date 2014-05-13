@@ -41,6 +41,7 @@ var Hill = function(player){
       if (hit) {
         console.log('hit: ', hit);
         player.crash();
+        features[feature].hit(hit);
       }
     }
   };
