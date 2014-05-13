@@ -7,7 +7,9 @@ var Player = function() {
   player.addChild(graphic);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
-  
+  var _jumping = false;
+  var _jumpAngle = 0;
+
   // Speed Variables
   var _speed = 0;
   var _speedMomentum = 0;
@@ -25,7 +27,7 @@ var Player = function() {
 
   // Turning Variables
   var _direction = null;
-  var _turnAngle = 0;
+  var _turnAngle = -90;
   var _turnMomentum = 0;
   var _maxTurnAngle = 90;
 
@@ -34,7 +36,8 @@ var Player = function() {
     if (_scrubbing) {
       _speed -= _scrubRate;
     } else {
-      var accel = 85-(Math.abs(_turnAngle));
+      var angle = (_jumping) ? _jumpAngle : _turnAngle;
+      var accel = 85-(Math.abs(angle));
       accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       //console.log("SPEED!: ",accel);
       _speed += accel;
@@ -77,6 +80,7 @@ var Player = function() {
     } else if (_turnAngle < -_maxTurnAngle) {
       _turnAngle = -_maxTurnAngle;
     }
+    
     return _turnAngle;
   }
 
@@ -114,6 +118,17 @@ var Player = function() {
     _direction = false;
   };
 
+  player.jump = function() {
+    _jumpAngle = _turnAngle;
+    _jumping = true;
+    createjs.Tween.get(player, {override:false})
+      .to({scaleX:1.5, scaleY:1.5}, 500, createjs.Ease.sineIn)
+      .to({scaleX:1, scaleY:1}, 500, createjs.Ease.sineOut)
+      .call(function(){
+        _jumping = false;
+      });
+  };
+
   player.crash = function() {
     _speed = 0;
   };
@@ -131,9 +146,10 @@ var Player = function() {
   };
 
   player.__defineGetter__('speed', function(){
+    var angle = (_jumping) ? _jumpAngle : _turnAngle;
     return {
-      x: Math.sin(_turnAngle*Math.PI/180)*_speed,
-      y: -(Math.cos(_turnAngle*Math.PI/180)*_speed)
+      x: Math.sin(angle*Math.PI/180)*_speed,
+      y: -(Math.cos(angle*Math.PI/180)*_speed)
     };
   });
 

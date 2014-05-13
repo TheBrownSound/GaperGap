@@ -22,11 +22,12 @@ var Hill = function(player){
 
   function addFeature() {
     console.log('addFeature');
-    var tree = new Tree();
-    features.push(tree);
-    tree.x = (-featureWrapper.x)+GaperGap.utils.getRandomInt(-_width*2,_width*2);
-    tree.y = (-featureWrapper.y)+(_height*2);
-    featureWrapper.addChild(tree);
+    var switcher = GaperGap.utils.getRandomInt(0,5);
+    var feature = (switcher > 3) ? new Jump() : new Tree();
+    features.push(feature);
+    feature.x = (-featureWrapper.x)+GaperGap.utils.getRandomInt(-_width*2,_width*2);
+    feature.y = (-featureWrapper.y)+(_height*2);
+    featureWrapper.addChild(feature);
   }
 
   hill.update = function() {
@@ -39,9 +40,7 @@ var Hill = function(player){
     for (var feature in features) {
       var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
       if (hit) {
-        console.log('hit: ', hit);
-        player.crash();
-        features[feature].hit(hit);
+        features[feature].hit(player, hit);
       }
     }
   };

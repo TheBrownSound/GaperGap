@@ -4,6 +4,7 @@
 // @depends Player.js
 // @depends Hill.js
 // @depends Tree.js
+// @depends Jump.js
 
 // Parent Game Logic
 var GaperGap = (function(){
@@ -80,6 +81,7 @@ var GaperGap = (function(){
       {src:"skier.png", id:"skier"},
       {src:"trunk.png", id:"trunk"},
       {src:"tree.png", id:"tree"},
+      {src:"jump.png", id:"jump"},
       {src:"arrow.png", id:"arrow"},
       {src:"hill_background.png", id:"hill-background"}
     ];

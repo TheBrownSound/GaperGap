@@ -15,7 +15,8 @@ var Tree = function() {
 
   tree.addChild(trunk, branches);
 
-  tree.hit = function(collision) {
+  tree.hit = function(player, collision) {
+    player.crash();
     if (!hasBeenHit) {
       var coords = tree.globalToLocal(collision.x, collision.y);
       var impact = -(coords.x);

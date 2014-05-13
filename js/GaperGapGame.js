@@ -121,7 +121,9 @@ var Player = function() {
   player.addChild(graphic);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
-  
+  var _jumping = false;
+  var _jumpAngle = 0;
+
   // Speed Variables
   var _speed = 0;
   var _speedMomentum = 0;
@@ -139,7 +141,7 @@ var Player = function() {
 
   // Turning Variables
   var _direction = null;
-  var _turnAngle = 0;
+  var _turnAngle = -90;
   var _turnMomentum = 0;
   var _maxTurnAngle = 90;
 
@@ -148,7 +150,8 @@ var Player = function() {
     if (_scrubbing) {
       _speed -= _scrubRate;
     } else {
-      var accel = 85-(Math.abs(_turnAngle));
+      var angle = (_jumping) ? _jumpAngle : _turnAngle;
+      var accel = 85-(Math.abs(angle));
       accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       //console.log("SPEED!: ",accel);
       _speed += accel;
@@ -191,6 +194,7 @@ var Player = function() {
     } else if (_turnAngle < -_maxTurnAngle) {
       _turnAngle = -_maxTurnAngle;
     }
+    
     return _turnAngle;
   }
 
@@ -228,6 +232,17 @@ var Player = function() {
     _direction = false;
   };
 
+  player.jump = function() {
+    _jumpAngle = _turnAngle;
+    _jumping = true;
+    createjs.Tween.get(player, {override:false})
+      .to({scaleX:1.5, scaleY:1.5}, 500, createjs.Ease.sineIn)
+      .to({scaleX:1, scaleY:1}, 500, createjs.Ease.sineOut)
+      .call(function(){
+        _jumping = false;
+      });
+  };
+
   player.crash = function() {
     _speed = 0;
   };
@@ -245,9 +260,10 @@ var Player = function() {
   };
 
   player.__defineGetter__('speed', function(){
+    var angle = (_jumping) ? _jumpAngle : _turnAngle;
     return {
-      x: Math.sin(_turnAngle*Math.PI/180)*_speed,
-      y: -(Math.cos(_turnAngle*Math.PI/180)*_speed)
+      x: Math.sin(angle*Math.PI/180)*_speed,
+      y: -(Math.cos(angle*Math.PI/180)*_speed)
     };
   });
 
@@ -285,11 +301,12 @@ var Hill = function(player){
 
   function addFeature() {
     console.log('addFeature');
-    var tree = new Tree();
-    features.push(tree);
-    tree.x = (-featureWrapper.x)+GaperGap.utils.getRandomInt(-_width*2,_width*2);
-    tree.y = (-featureWrapper.y)+(_height*2);
-    featureWrapper.addChild(tree);
+    var switcher = GaperGap.utils.getRandomInt(0,5);
+    var feature = (switcher > 3) ? new Jump() : new Tree();
+    features.push(feature);
+    feature.x = (-featureWrapper.x)+GaperGap.utils.getRandomInt(-_width*2,_width*2);
+    feature.y = (-featureWrapper.y)+(_height*2);
+    featureWrapper.addChild(feature);
   }
 
   hill.update = function() {
@@ -302,9 +319,7 @@ var Hill = function(player){
     for (var feature in features) {
       var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
       if (hit) {
-        console.log('hit: ', hit);
-        player.crash();
-        features[feature].hit(hit);
+        features[feature].hit(player, hit);
       }
     }
   };
@@ -349,7 +364,8 @@ var Tree = function() {
 
   tree.addChild(trunk, branches);
 
-  tree.hit = function(collision) {
+  tree.hit = function(player, collision) {
+    player.crash();
     if (!hasBeenHit) {
       var coords = tree.globalToLocal(collision.x, collision.y);
       var impact = -(coords.x);
@@ -365,6 +381,25 @@ var Tree = function() {
   });
 
   return tree;
+};
+var Jump = function() {
+  var jump = new createjs.Container();
+  var kicker = new createjs.Bitmap(GaperGap.assets['jump']);
+  
+  kicker.regX = kicker.image.width/2;
+  kicker.regY = kicker.image.height;
+
+  jump.hit = function(player) {
+    player.jump();
+  };
+  
+  jump.__defineGetter__('hitArea', function(){
+    return kicker;
+  });
+
+  jump.addChild(kicker);
+
+  return jump;
 };
 
 // Parent Game Logic
@@ -442,6 +477,7 @@ var GaperGap = (function(){
       {src:"skier.png", id:"skier"},
       {src:"trunk.png", id:"trunk"},
       {src:"tree.png", id:"tree"},
+      {src:"jump.png", id:"jump"},
       {src:"arrow.png", id:"arrow"},
       {src:"hill_background.png", id:"hill-background"}
     ];
