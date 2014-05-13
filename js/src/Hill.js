@@ -22,13 +22,10 @@ var Hill = function(player){
 
   function addFeature() {
     console.log('addFeature');
-    var tree = new createjs.Bitmap(GaperGap.assets['tree']);
+    var tree = new Tree();
     features.push(tree);
     tree.x = (-featureWrapper.x)+GaperGap.utils.getRandomInt(-_width*2,_width*2);
-    console.log('height: ', _height);
     tree.y = (-featureWrapper.y)+(_height*2);
-    tree.regX = tree.image.width/2;
-    tree.regY = tree.image.height;
     featureWrapper.addChild(tree);
   }
 

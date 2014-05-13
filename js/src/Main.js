@@ -3,6 +3,7 @@
 // @depends Game.js
 // @depends Player.js
 // @depends Hill.js
+// @depends Tree.js
 
 // Parent Game Logic
 var GaperGap = (function(){
