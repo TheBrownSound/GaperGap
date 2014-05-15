@@ -3,6 +3,7 @@
 // @depends Game.js
 // @depends Player.js
 // @depends Hill.js
+// @depends Section.js
 // @depends Tree.js
 // @depends Jump.js
 

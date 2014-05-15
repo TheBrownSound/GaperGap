@@ -2,15 +2,15 @@ var Hill = function(player){
   var _width = 300;
   var _height = 300;
 
-  var features = [];
+  var section_size = 1000;
+  var section_density = 20;
+  var sections = [];
 
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
-  var featureWrapper = new createjs.Container();
+  var sectionWrapper = new createjs.Container();
 
-  hill.addChild(snow, player, featureWrapper);
-
-  var featureInterval = setInterval(addFeature, 500);
+  hill.addChild(snow, player, sectionWrapper);
 
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
@@ -20,29 +20,37 @@ var Hill = function(player){
     snow.graphics.endFill();
   }
 
-  function addFeature() {
-    console.log('addFeature');
-    var switcher = GaperGap.utils.getRandomInt(0,5);
-    var feature = (switcher > 3) ? new Jump() : new Tree();
-    features.push(feature);
-    feature.x = (-featureWrapper.x)+GaperGap.utils.getRandomInt(-_width*2,_width*2);
-    feature.y = (-featureWrapper.y)+(_height*2);
-    featureWrapper.addChild(feature);
+  function addSection(xCoord, yCoord) {
+    console.log('Hill:addSection - ', xCoord, yCoord);
+    var section = new Section(section_size, section_density);
+    section.x = xCoord;
+    section.y = yCoord;
+    sections.push(section);
+    sectionWrapper.addChild(section);
   }
 
   hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
     snow.x = (snow.x+player.speed.x) % 400;
     snow.y = (snow.y+player.speed.y) % 400;
-    featureWrapper.x += player.speed.x;
-    featureWrapper.y += player.speed.y;
+    sectionWrapper.x += player.speed.x;
+    sectionWrapper.y += player.speed.y;
 
-    for (var feature in features) {
-      var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
-      if (hit) {
-        features[feature].hit(player, hit);
-      }
+    for (var section in sections) {
+      // check if the player is currently in the section,
+      // if it is, do hittests on section features
+      /*
+      for (var feature in features) {
+        var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
+        if (hit) {
+          features[feature].hit(player, hit);
+        }
+      }*/
+      
+      // check if section is higher than the screen, if it is remove it!
     }
+
+    // do logic to check to see if we need to add another section.
   };
 
   hill.__defineSetter__('height', function(value){
