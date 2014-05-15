@@ -70,13 +70,13 @@ var Game = function() {
   GaperGap.addEventListener('onKeyDown', function(event) {
     switch(event.key) {
       case 37: //Left
-        player.turnRight();
+        player.turnLeft();
         break;
       case 38: //Up
         player.scrubSpeed(true);
         break;
       case 39: //Right
-        player.turnLeft();
+        player.turnRight();
         break;
       case 40: //Down
         player.tuckDown(true);
