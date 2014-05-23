@@ -24,7 +24,7 @@ var Player = function() {
 
   gaper.regX = gaper.image.width/2;
   gaper.regY = gaper.image.height;
-  gaper.y = -6;
+  gaper.y = -8;
 
   leftSki.regX = rightSki.regX = skiData.frames.width/2;
   leftSki.regY = rightSki.regY = skiData.frames.height/2;

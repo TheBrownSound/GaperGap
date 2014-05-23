@@ -39,6 +39,10 @@ var Hill = function(player){
     snow.y = (snow.y+player.speed.y) % 400;
     sectionWrapper.x += player.speed.x;
     sectionWrapper.y += player.speed.y;
+    var currentSection = {
+      col: Math.floor(-sectionWrapper.x/section_size),
+      row: Math.floor(-sectionWrapper.y/section_size)
+    };
     
     // hillDebugMarker.graphics.clear().beginStroke('#F00').drawRect(visibleHill.x,visibleHill.y,visibleHill.width, visibleHill.height);
     var visibleSections = getVisibleSections();
@@ -57,6 +61,11 @@ var Hill = function(player){
         sectionWrapper.removeChild(sect);
         delete sections[section];
       } else {
+        if (section == currentSection.col+"_"+currentSection.row) {
+          var playerLoc = this.localToLocal(0,0, sectionWrapper);
+          console.log(playerLoc.y);
+          sect.drawTrack(playerLoc.x, playerLoc.y);
+        }
         var features = sect.features;
         for (var feature in features) {
           var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
