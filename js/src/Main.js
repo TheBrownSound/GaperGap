@@ -79,12 +79,13 @@ var GaperGap = (function(){
     stage.snapToPixelEnabled = true;
 
     manifest = [
-      {src:"skier.png", id:"skier"},
+      {src:"gaper_gabe.png", id:"skier"},
       {src:"trunk.png", id:"trunk"},
       {src:"tree.png", id:"tree"},
       {src:"jump.png", id:"jump"},
       {src:"arrow.png", id:"arrow"},
-      {src:"ski_sprite.png", id:"ski_sprite"},
+      {src:"pants_sprite.png", id:"pants-sprite"},
+      {src:"ski_sprite.png", id:"ski-sprite"},
       {src:"hill_background.png", id:"hill-background"}
     ];
 

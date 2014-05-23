@@ -2,8 +2,19 @@ var Player = function() {
   var player = new createjs.Container();
   var gaper = new createjs.Bitmap(GaperGap.assets['skier']);
 
+  var pantsData = {
+    images: [GaperGap.assets['pants-sprite']],
+    frames: {width:30, height: 25}
+  };
+
+  var pantsSprite = new createjs.SpriteSheet(pantsData);
+  var pants = new createjs.Sprite(pantsSprite);
+  pants.regX = pantsData.frames.width/2;
+  pants.y = -pantsData.frames.height+4;
+  pants.gotoAndStop(2);
+
   var skiData = {
-     images: [GaperGap.assets['ski_sprite']],
+     images: [GaperGap.assets['ski-sprite']],
      frames: {width:10, height:60}
   };
 
@@ -13,6 +24,7 @@ var Player = function() {
 
   gaper.regX = gaper.image.width/2;
   gaper.regY = gaper.image.height;
+  gaper.y = -6;
 
   leftSki.regX = rightSki.regX = skiData.frames.width/2;
   leftSki.regY = rightSki.regY = skiData.frames.height/2;
@@ -23,7 +35,7 @@ var Player = function() {
   leftSki.x = -10;
   rightSki.x = 10;
 
-  player.addChild(leftSki, rightSki, gaper);
+  player.addChild(leftSki, rightSki, pants, gaper);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
   var _jumping = false;
@@ -156,27 +168,27 @@ var Player = function() {
     var turnAngle = calculateTurnAngle();
     leftSki.rotation = rightSki.rotation = turnAngle;
 
-    if (Math.abs(_turnMomentum) > 7) {
-      if (_direction == "left") {
-        leftSki.gotoAndStop(4);
-        rightSki.gotoAndStop(4);
-      } else {
-        leftSki.gotoAndStop(0);
-        rightSki.gotoAndStop(0);
-      }
-    } else if (Math.abs(_turnMomentum) > 1) {
-      if (_direction == "left") {
-        leftSki.gotoAndStop(3);
-        rightSki.gotoAndStop(3);
-      } else {
-        leftSki.gotoAndStop(1);
-        rightSki.gotoAndStop(1);
-      }
+    if (turnAngle < -60) {
+      pants.gotoAndStop(4);
+      leftSki.gotoAndStop(4);
+      rightSki.gotoAndStop(4);
+    } else if (turnAngle > 60) {
+      pants.gotoAndStop(0);
+      leftSki.gotoAndStop(0);
+      rightSki.gotoAndStop(0);
+    } else if (turnAngle < -30) {
+      pants.gotoAndStop(3);
+      leftSki.gotoAndStop(3);
+      rightSki.gotoAndStop(3);
+    } else if (turnAngle > 30) {
+      pants.gotoAndStop(1);
+      leftSki.gotoAndStop(1);
+      rightSki.gotoAndStop(1);
     } else {
+      pants.gotoAndStop(2);
       leftSki.gotoAndStop(2);
       rightSki.gotoAndStop(2);
     }
-
 
     if (_tucking) {
       gaper.scaleY = 0.8;
