@@ -70,16 +70,16 @@ var Game = function() {
   GaperGap.addEventListener('onKeyDown', function(event) {
     switch(event.key) {
       case 37: //Left
-        player.turnLeft();
-        break;
-      case 38: //Up
-        player.scrubSpeed(true);
-        break;
-      case 39: //Right
         player.turnRight();
         break;
-      case 40: //Down
+      case 38: //Up
         player.tuckDown(true);
+        break;
+      case 39: //Right
+        player.turnLeft();
+        break;
+      case 40: //Down
+        player.scrubSpeed(true);
         break;
       default:
         console.log("unhandled keydown! - ", event.key);
@@ -93,10 +93,10 @@ var Game = function() {
         player.stopTurning();
         break;
       case 38: //Up
-        player.scrubSpeed(false);
+        player.tuckDown(false);
         break;
       case 40: //Down
-        player.tuckDown(false);
+        player.scrubSpeed(false);
         break;
       default:
         console.log("unhandled keyup! - ", event.key);
@@ -282,6 +282,12 @@ var Player = function() {
   player.update = function() {
     var turnAngle = calculateTurnAngle();
     leftSki.rotation = rightSki.rotation = turnAngle;
+
+    leftSki.y = (-turnAngle/90)*2;
+    rightSki.y = (turnAngle/90)*2;
+
+    //leftSki.x = (-turnAngle/90)*-10;
+    //rightSki.x = (-turnAngle/90)*0.2+10;
 
     if (turnAngle < -60) {
       pants.gotoAndStop(4);

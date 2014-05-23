@@ -168,6 +168,12 @@ var Player = function() {
     var turnAngle = calculateTurnAngle();
     leftSki.rotation = rightSki.rotation = turnAngle;
 
+    leftSki.y = (-turnAngle/90)*2;
+    rightSki.y = (turnAngle/90)*2;
+
+    //leftSki.x = (-turnAngle/90)*-10;
+    //rightSki.x = (-turnAngle/90)*0.2+10;
+
     if (turnAngle < -60) {
       pants.gotoAndStop(4);
       leftSki.gotoAndStop(4);
