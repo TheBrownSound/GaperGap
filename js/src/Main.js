@@ -84,6 +84,7 @@ var GaperGap = (function(){
       {src:"tree.png", id:"tree"},
       {src:"jump.png", id:"jump"},
       {src:"arrow.png", id:"arrow"},
+      {src:"ski_sprite.png", id:"ski_sprite"},
       {src:"hill_background.png", id:"hill-background"}
     ];
 

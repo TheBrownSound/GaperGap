@@ -104,6 +104,7 @@ var Game = function() {
   });
 
   GaperGap.addEventListener('stageResized', function(event){
+    console.log('stageResized', event);
     game.x = event.width/2;
     game.y = event.height/2;
     hill.width = event.width;
@@ -114,11 +115,30 @@ var Game = function() {
 };
 var Player = function() {
   var player = new createjs.Container();
-  var graphic = new createjs.Bitmap(GaperGap.assets['arrow']);
-  graphic.regX = graphic.image.width/2;
-  graphic.regY = graphic.image.height/2;
+  var gaper = new createjs.Bitmap(GaperGap.assets['skier']);
 
-  player.addChild(graphic);
+  var skiData = {
+     images: [GaperGap.assets['ski_sprite']],
+     frames: {width:10, height:60}
+  };
+
+  var ski = new createjs.SpriteSheet(skiData);
+  var leftSki = new createjs.Sprite(ski);
+  var rightSki = new createjs.Sprite(ski);
+
+  gaper.regX = gaper.image.width/2;
+  gaper.regY = gaper.image.height;
+
+  leftSki.regX = rightSki.regX = skiData.frames.width/2;
+  leftSki.regY = rightSki.regY = skiData.frames.height/2;
+
+  leftSki.gotoAndStop(2);
+  rightSki.gotoAndStop(2);
+
+  leftSki.x = -10;
+  rightSki.x = 10;
+
+  player.addChild(leftSki, rightSki, gaper);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
   var _jumping = false;
@@ -248,13 +268,37 @@ var Player = function() {
   };
 
   player.update = function() {
-    player.rotation = calculateTurnAngle();
-    if (_tucking) {
-      graphic.scaleY = 1.2;
-    } else if (_scrubbing) {
-      graphic.scaleY = 0.8;
+    var turnAngle = calculateTurnAngle();
+    leftSki.rotation = rightSki.rotation = turnAngle;
+
+    if (Math.abs(_turnMomentum) > 7) {
+      if (_direction == "left") {
+        leftSki.gotoAndStop(4);
+        rightSki.gotoAndStop(4);
+      } else {
+        leftSki.gotoAndStop(0);
+        rightSki.gotoAndStop(0);
+      }
+    } else if (Math.abs(_turnMomentum) > 1) {
+      if (_direction == "left") {
+        leftSki.gotoAndStop(3);
+        rightSki.gotoAndStop(3);
+      } else {
+        leftSki.gotoAndStop(1);
+        rightSki.gotoAndStop(1);
+      }
     } else {
-      graphic.scaleY = 1;
+      leftSki.gotoAndStop(2);
+      rightSki.gotoAndStop(2);
+    }
+
+
+    if (_tucking) {
+      gaper.scaleY = 0.8;
+    } else if (_scrubbing) {
+      gaper.scaleY = 1.1;
+    } else {
+      gaper.scaleY = 1;
     }
     calculateSpeed();
   };
@@ -272,7 +316,7 @@ var Player = function() {
   });
 
   player.__defineGetter__('hitArea', function(){
-    return graphic;
+    return gaper;
   });
 
   return player;
@@ -282,14 +326,18 @@ var Hill = function(player){
   var _height = 300;
 
   var section_size = 1000;
-  var section_density = 20;
-  var sections = [];
+  var section_density = 6;
+  var sections = {};
 
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
   var sectionWrapper = new createjs.Container();
 
+  var hillDebugMarker = new createjs.Shape();
+
+  sectionWrapper.addChild(hillDebugMarker);
   hill.addChild(snow, player, sectionWrapper);
+
 
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
@@ -299,12 +347,12 @@ var Hill = function(player){
     snow.graphics.endFill();
   }
 
-  function addSection(xCoord, yCoord) {
-    console.log('Hill:addSection - ', xCoord, yCoord);
+  function addSection(col, row) {
+    console.log('Hill:addSection - ', col, row);
     var section = new Section(section_size, section_density);
-    section.x = xCoord;
-    section.y = yCoord;
-    sections.push(section);
+    section.x = col*section_size;
+    section.y = row*section_size;
+    sections[col+'_'+row] = section;
     sectionWrapper.addChild(section);
   }
 
@@ -314,23 +362,55 @@ var Hill = function(player){
     snow.y = (snow.y+player.speed.y) % 400;
     sectionWrapper.x += player.speed.x;
     sectionWrapper.y += player.speed.y;
+    
+    // hillDebugMarker.graphics.clear().beginStroke('#F00').drawRect(visibleHill.x,visibleHill.y,visibleHill.width, visibleHill.height);
+    var visibleSections = getVisibleSections();
 
+    for (var visibleSection in visibleSections) {
+      var gridPosition = visibleSections[visibleSection];
+      if (!sections[gridPosition.column+'_'+gridPosition.row]) {
+        addSection(gridPosition.column, gridPosition.row);
+      }
+    }
+    
     for (var section in sections) {
-      // check if the player is currently in the section,
-      // if it is, do hittests on section features
-      /*
-      for (var feature in features) {
-        var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
-        if (hit) {
-          features[feature].hit(player, hit);
-        }
-      }*/
-      
       // check if section is higher than the screen, if it is remove it!
+      var sect = sections[section];
+      if (sect.y+section_size < (-sectionWrapper.y) - (_height/2)) {
+        sectionWrapper.removeChild(sect);
+        delete sections[section];
+      } else {
+        var features = sect.features;
+        for (var feature in features) {
+          var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
+          if (hit) {
+            features[feature].hit(player, hit);
+          }
+        }
+      }
     }
 
-    // do logic to check to see if we need to add another section.
   };
+
+  function getVisibleSections() {
+    var x = (-sectionWrapper.x) - (_width/2);
+    var y = (-sectionWrapper.y) - (_height/2);
+
+    var visibleKeys = [];
+    var startingColumn = Math.floor(x/section_size);
+    var startingRow = Math.floor(y/section_size);
+
+    var cols = Math.ceil(_width/section_size)+1;
+    var rows = Math.ceil(_height/section_size)+1;
+
+    for (var i = 0; i < cols*rows; i++) {
+      var col = i%cols+startingColumn;
+      var row = Math.floor(i/cols)+startingRow;
+      visibleKeys.push({column:col, row:row});
+    }
+
+    return visibleKeys;
+  }
 
   hill.__defineSetter__('height', function(value){
     _height = value;
@@ -342,7 +422,7 @@ var Hill = function(player){
   });
 
   hill.__defineSetter__('width', function(value){
-    _height = value;
+    _width = value;
     return _width;
   });
 
@@ -359,12 +439,16 @@ var Section = function(size, density) {
   density = density || 10;
   var _features = [];
   var section = new createjs.Container();
+  var debugShape = new createjs.Shape();
+  debugShape.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
+
+  section.addChild(debugShape);
 
   while (_features.length < density) {
-    var switcher = GaperGap.utils.getRandomInt(0,5);
-    var feature = (switcher > 3) ? new Jump() : new Tree();
-    feature.x = GaperGap.utils.getRandomInt(size,size);
-    feature.y = GaperGap.utils.getRandomInt(size,size);
+    var switcher = GaperGap.utils.getRandomInt(0,10);
+    var feature = (switcher > 9) ? new Jump() : new Tree();
+    feature.x = GaperGap.utils.getRandomInt(0,size);
+    feature.y = GaperGap.utils.getRandomInt(0,size);
     _features.push(feature);
     section.addChild(feature);
   }
@@ -507,6 +591,7 @@ var GaperGap = (function(){
       {src:"tree.png", id:"tree"},
       {src:"jump.png", id:"jump"},
       {src:"arrow.png", id:"arrow"},
+      {src:"ski_sprite.png", id:"ski_sprite"},
       {src:"hill_background.png", id:"hill-background"}
     ];
 

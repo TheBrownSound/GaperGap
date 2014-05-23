@@ -73,6 +73,7 @@ var Game = function() {
   });
 
   GaperGap.addEventListener('stageResized', function(event){
+    console.log('stageResized', event);
     game.x = event.width/2;
     game.y = event.height/2;
     hill.width = event.width;

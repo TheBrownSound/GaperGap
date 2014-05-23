@@ -1,10 +1,29 @@
 var Player = function() {
   var player = new createjs.Container();
-  var graphic = new createjs.Bitmap(GaperGap.assets['arrow']);
-  graphic.regX = graphic.image.width/2;
-  graphic.regY = graphic.image.height/2;
+  var gaper = new createjs.Bitmap(GaperGap.assets['skier']);
 
-  player.addChild(graphic);
+  var skiData = {
+     images: [GaperGap.assets['ski_sprite']],
+     frames: {width:10, height:60}
+  };
+
+  var ski = new createjs.SpriteSheet(skiData);
+  var leftSki = new createjs.Sprite(ski);
+  var rightSki = new createjs.Sprite(ski);
+
+  gaper.regX = gaper.image.width/2;
+  gaper.regY = gaper.image.height;
+
+  leftSki.regX = rightSki.regX = skiData.frames.width/2;
+  leftSki.regY = rightSki.regY = skiData.frames.height/2;
+
+  leftSki.gotoAndStop(2);
+  rightSki.gotoAndStop(2);
+
+  leftSki.x = -10;
+  rightSki.x = 10;
+
+  player.addChild(leftSki, rightSki, gaper);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
   var _jumping = false;
@@ -134,13 +153,37 @@ var Player = function() {
   };
 
   player.update = function() {
-    player.rotation = calculateTurnAngle();
-    if (_tucking) {
-      graphic.scaleY = 1.2;
-    } else if (_scrubbing) {
-      graphic.scaleY = 0.8;
+    var turnAngle = calculateTurnAngle();
+    leftSki.rotation = rightSki.rotation = turnAngle;
+
+    if (Math.abs(_turnMomentum) > 7) {
+      if (_direction == "left") {
+        leftSki.gotoAndStop(4);
+        rightSki.gotoAndStop(4);
+      } else {
+        leftSki.gotoAndStop(0);
+        rightSki.gotoAndStop(0);
+      }
+    } else if (Math.abs(_turnMomentum) > 1) {
+      if (_direction == "left") {
+        leftSki.gotoAndStop(3);
+        rightSki.gotoAndStop(3);
+      } else {
+        leftSki.gotoAndStop(1);
+        rightSki.gotoAndStop(1);
+      }
     } else {
-      graphic.scaleY = 1;
+      leftSki.gotoAndStop(2);
+      rightSki.gotoAndStop(2);
+    }
+
+
+    if (_tucking) {
+      gaper.scaleY = 0.8;
+    } else if (_scrubbing) {
+      gaper.scaleY = 1.1;
+    } else {
+      gaper.scaleY = 1;
     }
     calculateSpeed();
   };
@@ -158,7 +201,7 @@ var Player = function() {
   });
 
   player.__defineGetter__('hitArea', function(){
-    return graphic;
+    return gaper;
   });
 
   return player;
