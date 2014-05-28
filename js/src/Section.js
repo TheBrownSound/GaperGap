@@ -12,10 +12,10 @@ var Section = function(size, density, coords) {
   var _foreground = new createjs.Container();
   var _background = new createjs.Container();
   var trackShape = new createjs.Shape();
-  var debugOutline = new createjs.Shape();
-  debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
+  //var debugOutline = new createjs.Shape();
+  // debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
 
-  _background.addChild(trackShape,debugOutline);
+  //_background.addChild(trackShape);
   //trackShape.alpha = 0.3;
 
   while (_features.length < density) {

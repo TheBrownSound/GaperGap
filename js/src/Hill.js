@@ -96,10 +96,12 @@ var Hill = function(player){
         }
         */
         var features = sect.features;
-        for (var feature in features) {
-          var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
-          if (hit) {
-            features[feature].hit(player, hit);
+        if (!player.airborne) {
+          for (var feature in features) {
+            var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
+            if (hit) {
+              features[feature].hit(player, hit);
+            }
           }
         }
       }

@@ -233,6 +233,10 @@ var Player = function() {
     return _maxSpeed+_maxTuck;
   });
 
+   player.__defineGetter__('airborne', function(){
+    return (_air > 0);
+  });
+
   player.__defineGetter__('hitArea', function(){
     return hitBox;
   });

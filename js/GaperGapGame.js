@@ -351,6 +351,10 @@ var Player = function() {
     return _maxSpeed+_maxTuck;
   });
 
+   player.__defineGetter__('airborne', function(){
+    return (_air > 0);
+  });
+
   player.__defineGetter__('hitArea', function(){
     return hitBox;
   });
@@ -455,10 +459,12 @@ var Hill = function(player){
         }
         */
         var features = sect.features;
-        for (var feature in features) {
-          var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
-          if (hit) {
-            features[feature].hit(player, hit);
+        if (!player.airborne) {
+          for (var feature in features) {
+            var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
+            if (hit) {
+              features[feature].hit(player, hit);
+            }
           }
         }
       }
@@ -527,10 +533,10 @@ var Section = function(size, density, coords) {
   var _foreground = new createjs.Container();
   var _background = new createjs.Container();
   var trackShape = new createjs.Shape();
-  var debugOutline = new createjs.Shape();
-  debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
+  //var debugOutline = new createjs.Shape();
+  // debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
 
-  _background.addChild(trackShape,debugOutline);
+  //_background.addChild(trackShape);
   //trackShape.alpha = 0.3;
 
   while (_features.length < density) {
