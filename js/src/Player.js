@@ -191,7 +191,12 @@ var Player = function() {
     _direction = false;
   };
 
+  player.squat = function() {
+    body.y = 8;
+  };
+
   player.jump = function(power) {
+    body.y = 4;
     if (_jump === 0) { // prevents 'floating'
       _jumpAngle = _turnAngle;
       _jump = power;

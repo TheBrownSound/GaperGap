@@ -69,6 +69,9 @@ var Game = function() {
 
   GaperGap.addEventListener('onKeyDown', function(event) {
     switch(event.key) {
+      case 32: //Space
+        player.squat();
+        break;
       case 37: //Left
         player.turnRight();
         break;
@@ -309,7 +312,12 @@ var Player = function() {
     _direction = false;
   };
 
+  player.squat = function() {
+    body.y = 8;
+  };
+
   player.jump = function(power) {
+    body.y = 4;
     if (_jump === 0) { // prevents 'floating'
       _jumpAngle = _turnAngle;
       _jump = power;

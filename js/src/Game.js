@@ -38,6 +38,9 @@ var Game = function() {
 
   GaperGap.addEventListener('onKeyDown', function(event) {
     switch(event.key) {
+      case 32: //Space
+        player.squat();
+        break;
       case 37: //Left
         player.turnRight();
         break;
