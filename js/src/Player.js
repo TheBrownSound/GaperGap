@@ -1,5 +1,8 @@
 var Player = function() {
   var player = new createjs.Container();
+
+  var dispatcher = createjs.EventDispatcher.initialize(player);
+
   var gaper = new createjs.Bitmap(GaperGap.assets['skier']);
   var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
 
@@ -73,10 +76,12 @@ var Player = function() {
 
   function calculateSpeed() {
     // calculate potential speed momentum
-    if (_scrubbing) {
+    if (_air > 0) {
+      return _speed;
+    } else if (_scrubbing) {
       _speed -= _scrubRate;
     } else {
-      var angle = (_air > 0) ? _jumpAngle : _turnAngle;
+      var angle = _turnAngle;
       var accel = 85-(Math.abs(angle));
       accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       //console.log("SPEED!: ",accel);
@@ -163,6 +168,7 @@ var Player = function() {
     if (_jump === 0) { // prevents 'floating'
       _jumpAngle = _turnAngle;
       _jump = power;
+      player.dispatchEvent('jump');
     }
   };
 
@@ -182,6 +188,7 @@ var Player = function() {
       player.scaleX = player.scaleY = (_air/100)+1;
       _jump -= _gravity;
       if (_air <= 0) {
+        player.dispatchEvent('land');
         _air = _jump = 0;
       }
     }

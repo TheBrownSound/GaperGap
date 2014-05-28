@@ -118,6 +118,9 @@ var Game = function() {
 };
 var Player = function() {
   var player = new createjs.Container();
+
+  var dispatcher = createjs.EventDispatcher.initialize(player);
+
   var gaper = new createjs.Bitmap(GaperGap.assets['skier']);
   var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
 
@@ -191,10 +194,12 @@ var Player = function() {
 
   function calculateSpeed() {
     // calculate potential speed momentum
-    if (_scrubbing) {
+    if (_air > 0) {
+      return _speed;
+    } else if (_scrubbing) {
       _speed -= _scrubRate;
     } else {
-      var angle = (_air > 0) ? _jumpAngle : _turnAngle;
+      var angle = _turnAngle;
       var accel = 85-(Math.abs(angle));
       accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       //console.log("SPEED!: ",accel);
@@ -281,6 +286,7 @@ var Player = function() {
     if (_jump === 0) { // prevents 'floating'
       _jumpAngle = _turnAngle;
       _jump = power;
+      player.dispatchEvent('jump');
     }
   };
 
@@ -300,6 +306,7 @@ var Player = function() {
       player.scaleX = player.scaleY = (_air/100)+1;
       _jump -= _gravity;
       if (_air <= 0) {
+        player.dispatchEvent('land');
         _air = _jump = 0;
       }
     }
@@ -362,13 +369,16 @@ var Hill = function(player){
 
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
-  var hillWrapper = new createjs.Container();
+  var hillForeground = new createjs.Container();
+  var hillBackground = new createjs.Container();
 
   // var hillDebugMarker = new createjs.Shape();
 
   // hillWrapper.addChild(hillDebugMarker);
-  hillWrapper.addChild(player);
-  hill.addChild(snow, hillWrapper);
+  hill.addChild(snow, hillBackground, player, hillForeground);
+
+  player.addEventListener('jump', playerJumped);
+  player.addEventListener('land', playerLanded);
 
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
@@ -387,13 +397,23 @@ var Hill = function(player){
     section.x = col*section_size;
     section.y = row*section_size;
     sections[col+'_'+row] = section;
-    hillWrapper.addChild(section.foreground);
-    hillWrapper.addChildAt(section.background, 0);
+    hillForeground.addChild(section.foreground);
+    hillBackground.addChild(section.background);
   }
 
   function removeSection(section) {
-    hillWrapper.removeChild(section.foreground);
-    hillWrapper.removeChild(section.background);
+    hillForeground.removeChild(section.foreground);
+    hillBackground.removeChild(section.background);
+  }
+
+  function playerJumped() {
+    console.log("player Jumped");
+    hill.addChild(player);
+  }
+
+  function playerLanded() {
+    console.log("player Landed");
+    hill.addChildAt(player, hill.getChildIndex(hillForeground));
   }
 
   hill.update = function() {
@@ -529,6 +549,15 @@ var Section = function(size, density, coords) {
     }
   }
 
+  _background.sortChildren(sortFeatures);
+  _foreground.sortChildren(sortFeatures);
+
+  function sortFeatures(child1, child2, options) {
+    if (child1.y > child2.y) { return 1; }
+    if (child1.y < child2.y) { return -1; }
+    return 0;
+  }
+
   section.drawTrack = function(x,y) {
     trackShape.graphics.beginFill("#000").drawCircle(x, y, 4).endFill();
   };
@@ -635,7 +664,7 @@ var Jump = function() {
   var kicker = new createjs.Bitmap(GaperGap.assets['jump']);
   
   kicker.regX = kicker.image.width/2;
-  kicker.regY = kicker.image.height;
+  // kicker.regY = kicker.image.height;
 
   jump.hit = function(player) {
     player.jump(4);

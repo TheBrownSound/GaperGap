@@ -3,7 +3,7 @@ var Jump = function() {
   var kicker = new createjs.Bitmap(GaperGap.assets['jump']);
   
   kicker.regX = kicker.image.width/2;
-  kicker.regY = kicker.image.height;
+  // kicker.regY = kicker.image.height;
 
   jump.hit = function(player) {
     player.jump(4);

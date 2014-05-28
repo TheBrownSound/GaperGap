@@ -34,6 +34,15 @@ var Section = function(size, density, coords) {
     }
   }
 
+  _background.sortChildren(sortFeatures);
+  _foreground.sortChildren(sortFeatures);
+
+  function sortFeatures(child1, child2, options) {
+    if (child1.y > child2.y) { return 1; }
+    if (child1.y < child2.y) { return -1; }
+    return 0;
+  }
+
   section.drawTrack = function(x,y) {
     trackShape.graphics.beginFill("#000").drawCircle(x, y, 4).endFill();
   };

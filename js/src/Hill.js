@@ -10,13 +10,16 @@ var Hill = function(player){
 
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
-  var hillWrapper = new createjs.Container();
+  var hillForeground = new createjs.Container();
+  var hillBackground = new createjs.Container();
 
   // var hillDebugMarker = new createjs.Shape();
 
   // hillWrapper.addChild(hillDebugMarker);
-  hillWrapper.addChild(player);
-  hill.addChild(snow, hillWrapper);
+  hill.addChild(snow, hillBackground, player, hillForeground);
+
+  player.addEventListener('jump', playerJumped);
+  player.addEventListener('land', playerLanded);
 
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
@@ -35,13 +38,23 @@ var Hill = function(player){
     section.x = col*section_size;
     section.y = row*section_size;
     sections[col+'_'+row] = section;
-    hillWrapper.addChild(section.foreground);
-    hillWrapper.addChildAt(section.background, 0);
+    hillForeground.addChild(section.foreground);
+    hillBackground.addChild(section.background);
   }
 
   function removeSection(section) {
-    hillWrapper.removeChild(section.foreground);
-    hillWrapper.removeChild(section.background);
+    hillForeground.removeChild(section.foreground);
+    hillBackground.removeChild(section.background);
+  }
+
+  function playerJumped() {
+    console.log("player Jumped");
+    hill.addChild(player);
+  }
+
+  function playerLanded() {
+    console.log("player Landed");
+    hill.addChildAt(player, hill.getChildIndex(hillForeground));
   }
 
   hill.update = function() {
