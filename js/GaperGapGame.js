@@ -605,7 +605,9 @@ var Tree = function() {
   var tree = {};
   var trunk = new createjs.Bitmap(GaperGap.assets['trunk']);
   var branches = new createjs.Container();
-  var leaves = new createjs.Bitmap(GaperGap.assets['tree']);
+  var leaves = new createjs.Bitmap(
+    GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,2)]
+  );
   
   branches.addChild(leaves);
 
@@ -758,7 +760,8 @@ var GaperGap = (function(){
       {src:"gaper_gabe.png", id:"skier"},
       {src:"hitbox.png", id:"player-hitbox"},
       {src:"trunk.png", id:"trunk"},
-      {src:"tree.png", id:"tree"},
+      {src:"tree_1.png", id:"tree-1"},
+      {src:"tree_2.png", id:"tree-2"},
       {src:"jump.png", id:"jump"},
       {src:"arrow.png", id:"arrow"},
       {src:"pants_sprite.png", id:"pants-sprite"},

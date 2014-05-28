@@ -5,7 +5,9 @@ var Tree = function() {
   var tree = {};
   var trunk = new createjs.Bitmap(GaperGap.assets['trunk']);
   var branches = new createjs.Container();
-  var leaves = new createjs.Bitmap(GaperGap.assets['tree']);
+  var leaves = new createjs.Bitmap(
+    GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,2)]
+  );
   
   branches.addChild(leaves);
 
