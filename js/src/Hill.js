@@ -1,4 +1,6 @@
 var Hill = function(player){
+  var _xPos = 0;
+  var _yPos = 0;
   var _width = 300;
   var _height = 300;
 
@@ -8,13 +10,13 @@ var Hill = function(player){
 
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
-  var sectionWrapper = new createjs.Container();
+  var hillWrapper = new createjs.Container();
 
-  var hillDebugMarker = new createjs.Shape();
+  // var hillDebugMarker = new createjs.Shape();
 
-  sectionWrapper.addChild(hillDebugMarker);
-  hill.addChild(snow, player, sectionWrapper);
-
+  // hillWrapper.addChild(hillDebugMarker);
+  hillWrapper.addChild(player);
+  hill.addChild(snow, hillWrapper);
 
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
@@ -26,22 +28,32 @@ var Hill = function(player){
 
   function addSection(col, row) {
     console.log('Hill:addSection - ', col, row);
-    var section = new Section(section_size, section_density);
+    var section = new Section(section_size, section_density, {
+      x:col*section_size,
+      y:row*section_size
+    });
     section.x = col*section_size;
     section.y = row*section_size;
     sections[col+'_'+row] = section;
-    sectionWrapper.addChild(section);
+    hillWrapper.addChild(section.foreground);
+    hillWrapper.addChildAt(section.background, 0);
+  }
+
+  function removeSection(section) {
+    hillWrapper.removeChild(section.foreground);
+    hillWrapper.removeChild(section.background);
   }
 
   hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
     snow.x = (snow.x+player.speed.x) % 400;
     snow.y = (snow.y+player.speed.y) % 400;
-    sectionWrapper.x += player.speed.x;
-    sectionWrapper.y += player.speed.y;
+    _xPos += player.speed.x;
+    _yPos += player.speed.y;
+    
     var currentSection = {
-      col: Math.floor(-sectionWrapper.x/section_size),
-      row: Math.floor(-sectionWrapper.y/section_size)
+      col: Math.floor(-_xPos/section_size),
+      row: Math.floor(-_yPos/section_size)
     };
     
     // hillDebugMarker.graphics.clear().beginStroke('#F00').drawRect(visibleHill.x,visibleHill.y,visibleHill.width, visibleHill.height);
@@ -57,8 +69,10 @@ var Hill = function(player){
     for (var section in sections) {
       // check if section is higher than the screen, if it is remove it!
       var sect = sections[section];
-      if (sect.y+section_size < (-sectionWrapper.y) - (_height/2)) {
-        sectionWrapper.removeChild(sect);
+
+      if (sect.y+section_size < (-_height/2) ) {
+        console.log("removing section");
+        removeSection(sect);
         delete sections[section];
       } else {
         /*
@@ -76,13 +90,17 @@ var Hill = function(player){
           }
         }
       }
+
+      //Move section
+      sect.x = sect.location.x+_xPos;
+      sect.y = sect.location.y+_yPos;
     }
 
   };
 
   function getVisibleSections() {
-    var x = (-sectionWrapper.x) - (_width/2);
-    var y = (-sectionWrapper.y) - (_height/2);
+    var x = (-_xPos) - (_width/2);
+    var y = (-_yPos) - (_height/2);
 
     var visibleKeys = [];
     var startingColumn = Math.floor(x/section_size);

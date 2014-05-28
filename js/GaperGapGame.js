@@ -351,6 +351,8 @@ var Player = function() {
   return player;
 };
 var Hill = function(player){
+  var _xPos = 0;
+  var _yPos = 0;
   var _width = 300;
   var _height = 300;
 
@@ -360,13 +362,13 @@ var Hill = function(player){
 
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
-  var sectionWrapper = new createjs.Container();
+  var hillWrapper = new createjs.Container();
 
-  var hillDebugMarker = new createjs.Shape();
+  // var hillDebugMarker = new createjs.Shape();
 
-  sectionWrapper.addChild(hillDebugMarker);
-  hill.addChild(snow, player, sectionWrapper);
-
+  // hillWrapper.addChild(hillDebugMarker);
+  hillWrapper.addChild(player);
+  hill.addChild(snow, hillWrapper);
 
   function drawHill() {
     var crossWidth = _width*2 + _height*2;
@@ -378,22 +380,32 @@ var Hill = function(player){
 
   function addSection(col, row) {
     console.log('Hill:addSection - ', col, row);
-    var section = new Section(section_size, section_density);
+    var section = new Section(section_size, section_density, {
+      x:col*section_size,
+      y:row*section_size
+    });
     section.x = col*section_size;
     section.y = row*section_size;
     sections[col+'_'+row] = section;
-    sectionWrapper.addChild(section);
+    hillWrapper.addChild(section.foreground);
+    hillWrapper.addChildAt(section.background, 0);
+  }
+
+  function removeSection(section) {
+    hillWrapper.removeChild(section.foreground);
+    hillWrapper.removeChild(section.background);
   }
 
   hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
     snow.x = (snow.x+player.speed.x) % 400;
     snow.y = (snow.y+player.speed.y) % 400;
-    sectionWrapper.x += player.speed.x;
-    sectionWrapper.y += player.speed.y;
+    _xPos += player.speed.x;
+    _yPos += player.speed.y;
+    
     var currentSection = {
-      col: Math.floor(-sectionWrapper.x/section_size),
-      row: Math.floor(-sectionWrapper.y/section_size)
+      col: Math.floor(-_xPos/section_size),
+      row: Math.floor(-_yPos/section_size)
     };
     
     // hillDebugMarker.graphics.clear().beginStroke('#F00').drawRect(visibleHill.x,visibleHill.y,visibleHill.width, visibleHill.height);
@@ -409,8 +421,10 @@ var Hill = function(player){
     for (var section in sections) {
       // check if section is higher than the screen, if it is remove it!
       var sect = sections[section];
-      if (sect.y+section_size < (-sectionWrapper.y) - (_height/2)) {
-        sectionWrapper.removeChild(sect);
+
+      if (sect.y+section_size < (-_height/2) ) {
+        console.log("removing section");
+        removeSection(sect);
         delete sections[section];
       } else {
         /*
@@ -428,13 +442,17 @@ var Hill = function(player){
           }
         }
       }
+
+      //Move section
+      sect.x = sect.location.x+_xPos;
+      sect.y = sect.location.y+_yPos;
     }
 
   };
 
   function getVisibleSections() {
-    var x = (-sectionWrapper.x) - (_width/2);
-    var y = (-sectionWrapper.y) - (_height/2);
+    var x = (-_xPos) - (_width/2);
+    var y = (-_yPos) - (_height/2);
 
     var visibleKeys = [];
     var startingColumn = Math.floor(x/section_size);
@@ -475,16 +493,25 @@ var Hill = function(player){
   return hill;
 };
 
-var Section = function(size, density) {
+var Section = function(size, density, coords) {
   density = density || 10;
+  var section = {};
+  var _x = 0;
+  var _y = 0;
+  var _location = {
+    x: coords.x || 0,
+    y: coords.y || 0
+  };
+
   var _features = [];
-  var section = new createjs.Container();
+  var _foreground = new createjs.Container();
+  var _background = new createjs.Container();
   var trackShape = new createjs.Shape();
   var debugOutline = new createjs.Shape();
   debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
 
-  section.addChild(trackShape,debugOutline);
-  trackShape.alpha = 0.3;
+  _background.addChild(trackShape,debugOutline);
+  //trackShape.alpha = 0.3;
 
   while (_features.length < density) {
     var switcher = GaperGap.utils.getRandomInt(0,10);
@@ -492,15 +519,45 @@ var Section = function(size, density) {
     feature.x = GaperGap.utils.getRandomInt(0,size);
     feature.y = GaperGap.utils.getRandomInt(0,size);
     _features.push(feature);
-    section.addChild(feature);
+    _background.addChild(feature);
   }
 
   section.drawTrack = function(x,y) {
-    trackShape.graphics.beginFill("#00").drawCircle(x, y, 4).endFill();
+    trackShape.graphics.beginFill("#000").drawCircle(x, y, 4).endFill();
   };
+
+  section.__defineGetter__('foreground', function(){
+    return _foreground;
+  });
+
+  section.__defineGetter__('background', function(){
+    return _background;
+  });
 
   section.__defineGetter__('features', function(){
     return _features;
+  });
+
+  section.__defineGetter__('location', function(){
+    return _location;
+  });
+
+  section.__defineSetter__('x', function(val){
+    _x = _foreground.x = _background.x = val;
+    return _x;
+  });
+
+  section.__defineGetter__('x', function(){
+    return _x;
+  });
+
+  section.__defineSetter__('y', function(val){
+    _y = _foreground.y = _background.y = val;
+    return _y;
+  });
+
+  section.__defineGetter__('y', function(){
+    return _y;
   });
 
   return section;
