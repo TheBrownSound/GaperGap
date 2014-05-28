@@ -1,48 +1,67 @@
 var Player = function() {
   var player = new createjs.Container();
-
   var dispatcher = createjs.EventDispatcher.initialize(player);
 
-  var gaper = new createjs.Bitmap(GaperGap.assets['skier']);
-  var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
+  // Head
+  var gaper = new createjs.Bitmap(GaperGap.assets['gabe']);
+  
+  gaper.regX = gaper.image.width/2;
+  gaper.regY = gaper.image.height;
+  gaper.y = -24;
 
+  // Body Sprite
+  var bodyData = {
+    images: [GaperGap.assets['body-sprite']],
+    frames: {width:70, height:52}
+  };
+
+  var bodySprite = new createjs.SpriteSheet(bodyData);
+  var body = new createjs.Sprite(bodySprite);
+  
+  body.regX = bodyData.frames.width/2;
+  body.regY = bodyData.frames.height-4;
+  body.y = 4;
+  body.gotoAndStop(0);
+
+  // Pants Sprite
   var pantsData = {
     images: [GaperGap.assets['pants-sprite']],
-    frames: {width:30, height: 25}
+    frames: {width:40, height:27}
   };
 
   var pantsSprite = new createjs.SpriteSheet(pantsData);
   var pants = new createjs.Sprite(pantsSprite);
+  
   pants.regX = pantsData.frames.width/2;
   pants.y = -pantsData.frames.height+4;
   pants.gotoAndStop(2);
 
+  // Ski Sprites
   var skiData = {
-     images: [GaperGap.assets['ski-sprite']],
-     frames: {width:10, height:60}
+    images: [GaperGap.assets['ski-sprite']],
+    frames: {width:10, height:60}
   };
 
   var ski = new createjs.SpriteSheet(skiData);
   var leftSki = new createjs.Sprite(ski);
   var rightSki = new createjs.Sprite(ski);
 
-  hitBox.regX = hitBox.image.width/2;
-  hitBox.regY = hitBox.image.height/2;
-  hitBox.alpha = 0;
-  gaper.regX = gaper.image.width/2;
-  gaper.regY = gaper.image.height;
-  gaper.y = 8;
-
   leftSki.regX = rightSki.regX = skiData.frames.width/2;
   leftSki.regY = rightSki.regY = skiData.frames.height/2;
-
+  
   leftSki.gotoAndStop(2);
   rightSki.gotoAndStop(2);
-
+  
   leftSki.x = -10;
   rightSki.x = 10;
 
-  player.addChild(hitBox, leftSki, rightSki, pants, gaper);
+  // Hitbox
+  var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
+  hitBox.regX = hitBox.image.width/2;
+  hitBox.regY = hitBox.image.height/2;
+  hitBox.alpha = 0;
+
+  player.addChild(hitBox, leftSki, rightSki, pants, body, gaper);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
 
@@ -145,7 +164,15 @@ var Player = function() {
 
   player.tuckDown = function(bool) {
     _tucking = bool;
-    gaper.y = (bool) ? 14:8;
+    if (bool) {
+      body.y =  -6;
+      gaper.y = -20;
+      body.gotoAndStop(1);
+    } else {
+      body.y = 4;
+      gaper.y = -24;
+      body.gotoAndStop(0);
+    }
   };
 
   player.scrubSpeed = function(bool) {
