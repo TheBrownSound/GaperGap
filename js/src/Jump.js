@@ -15,5 +15,9 @@ var Jump = function() {
 
   jump.addChild(kicker);
 
+  jump.__defineGetter__('background', function(){
+    return jump;
+  });
+
   return jump;
 };

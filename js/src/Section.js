@@ -21,10 +21,17 @@ var Section = function(size, density, coords) {
   while (_features.length < density) {
     var switcher = GaperGap.utils.getRandomInt(0,10);
     var feature = (switcher > 9) ? new Jump() : new Tree();
+
     feature.x = GaperGap.utils.getRandomInt(0,size);
     feature.y = GaperGap.utils.getRandomInt(0,size);
     _features.push(feature);
-    _background.addChild(feature);
+
+    if (feature.background) {
+      _background.addChild(feature.background);
+    }
+    if (feature.foreground) {
+      _foreground.addChild(feature.foreground);
+    }
   }
 
   section.drawTrack = function(x,y) {
