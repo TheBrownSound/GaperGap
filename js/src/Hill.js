@@ -61,11 +61,13 @@ var Hill = function(player){
         sectionWrapper.removeChild(sect);
         delete sections[section];
       } else {
+        /*
         if (section == currentSection.col+"_"+currentSection.row) {
           var playerLoc = this.localToLocal(0,0, sectionWrapper);
           console.log(playerLoc.y);
           sect.drawTrack(playerLoc.x, playerLoc.y);
         }
+        */
         var features = sect.features;
         for (var feature in features) {
           var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);

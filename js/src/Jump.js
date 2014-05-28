@@ -6,7 +6,7 @@ var Jump = function() {
   kicker.regY = kicker.image.height;
 
   jump.hit = function(player) {
-    player.jump();
+    player.jump(4);
   };
   
   jump.__defineGetter__('hitArea', function(){

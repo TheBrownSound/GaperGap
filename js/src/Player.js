@@ -1,6 +1,7 @@
 var Player = function() {
   var player = new createjs.Container();
   var gaper = new createjs.Bitmap(GaperGap.assets['skier']);
+  var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
 
   var pantsData = {
     images: [GaperGap.assets['pants-sprite']],
@@ -22,9 +23,12 @@ var Player = function() {
   var leftSki = new createjs.Sprite(ski);
   var rightSki = new createjs.Sprite(ski);
 
+  hitBox.regX = hitBox.image.width/2;
+  hitBox.regY = hitBox.image.height/2;
+  hitBox.alpha = 0;
   gaper.regX = gaper.image.width/2;
   gaper.regY = gaper.image.height;
-  gaper.y = -8;
+  gaper.y = 8;
 
   leftSki.regX = rightSki.regX = skiData.frames.width/2;
   leftSki.regY = rightSki.regY = skiData.frames.height/2;
@@ -35,39 +39,44 @@ var Player = function() {
   leftSki.x = -10;
   rightSki.x = 10;
 
-  player.addChild(leftSki, rightSki, pants, gaper);
+  player.addChild(hitBox, leftSki, rightSki, pants, gaper);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
-  var _jumping = false;
-  var _jumpAngle = 0;
 
   // Speed Variables
   var _speed = 0;
   var _speedMomentum = 0;
   var _maxSpeed = 8;
 
-  // Tuck Variables
+  // Tuck
   var _tucking = false;
   var _tuck = 0;
   var _tuckRate = 0.2;
   var _maxTuck = 4;
 
-  // Scrub Variables
+  // Scrub
   var _scrubbing = false;
   var _scrubRate = 0.2;
 
-  // Turning Variables
+  // Turning
   var _direction = null;
   var _turnAngle = -90;
   var _turnMomentum = 0;
   var _maxTurnAngle = 90;
+
+  // Jumping
+  var _jumping = false;
+  var _jump = 0;
+  var _air = 0;
+  var _jumpAngle = 0;
+  var _gravity = 0.2;
 
   function calculateSpeed() {
     // calculate potential speed momentum
     if (_scrubbing) {
       _speed -= _scrubRate;
     } else {
-      var angle = (_jumping) ? _jumpAngle : _turnAngle;
+      var angle = (_air > 0) ? _jumpAngle : _turnAngle;
       var accel = 85-(Math.abs(angle));
       accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       //console.log("SPEED!: ",accel);
@@ -131,6 +140,7 @@ var Player = function() {
 
   player.tuckDown = function(bool) {
     _tucking = bool;
+    gaper.y = (bool) ? 14:8;
   };
 
   player.scrubSpeed = function(bool) {
@@ -149,15 +159,11 @@ var Player = function() {
     _direction = false;
   };
 
-  player.jump = function() {
-    _jumpAngle = _turnAngle;
-    _jumping = true;
-    createjs.Tween.get(player, {override:false})
-      .to({scaleX:1.5, scaleY:1.5}, 500, createjs.Ease.sineIn)
-      .to({scaleX:1, scaleY:1}, 500, createjs.Ease.sineOut)
-      .call(function(){
-        _jumping = false;
-      });
+  player.jump = function(power) {
+    if (_jump === 0) { // prevents 'floating'
+      _jumpAngle = _turnAngle;
+      _jump = power;
+    }
   };
 
   player.crash = function() {
@@ -170,6 +176,15 @@ var Player = function() {
 
     leftSki.y = (-turnAngle/90)*2;
     rightSki.y = (turnAngle/90)*2;
+
+    if (_jump !== 0) {
+      _air += _jump;
+      player.scaleX = player.scaleY = (_air/100)+1;
+      _jump -= _gravity;
+      if (_air <= 0) {
+        _air = _jump = 0;
+      }
+    }
 
     //leftSki.x = (-turnAngle/90)*-10;
     //rightSki.x = (-turnAngle/90)*0.2+10;
@@ -196,18 +211,11 @@ var Player = function() {
       rightSki.gotoAndStop(2);
     }
 
-    if (_tucking) {
-      gaper.scaleY = 0.8;
-    } else if (_scrubbing) {
-      gaper.scaleY = 1.1;
-    } else {
-      gaper.scaleY = 1;
-    }
     calculateSpeed();
   };
 
   player.__defineGetter__('speed', function(){
-    var angle = (_jumping) ? _jumpAngle : _turnAngle;
+    var angle = (_air > 0) ? _jumpAngle : _turnAngle;
     return {
       x: Math.sin(angle*Math.PI/180)*_speed,
       y: -(Math.cos(angle*Math.PI/180)*_speed)
@@ -219,7 +227,7 @@ var Player = function() {
   });
 
   player.__defineGetter__('hitArea', function(){
-    return gaper;
+    return hitBox;
   });
 
   return player;

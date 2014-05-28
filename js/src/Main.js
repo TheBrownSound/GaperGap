@@ -80,6 +80,7 @@ var GaperGap = (function(){
 
     manifest = [
       {src:"gaper_gabe.png", id:"skier"},
+      {src:"hitbox.png", id:"player-hitbox"},
       {src:"trunk.png", id:"trunk"},
       {src:"tree.png", id:"tree"},
       {src:"jump.png", id:"jump"},

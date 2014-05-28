@@ -57,6 +57,9 @@ var Game = function() {
 
   GaperGap.addEventListener('onKeyUp', function(event) {
     switch(event.key) {
+      case 32: //Space
+        player.jump(2);
+        break;
       case 37: //Left
       case 39: //Right
         player.stopTurning();
