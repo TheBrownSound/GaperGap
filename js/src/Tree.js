@@ -20,11 +20,13 @@ var Tree = function() {
   leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
 
   tree.hit = function(player, collision) {
-    player.crash();
+    var coords = trunk.globalToLocal(collision.x, collision.y);
+    var impact = -(coords.x-(trunk.image.width/2));
+    if (Math.abs(impact) < 10) {
+      player.crash();
+    }
+
     if (!hasBeenHit) {
-      var coords = trunk.globalToLocal(collision.x, collision.y);
-      console.log("Tree:hit - ", coords);
-      var impact = -(coords.x-(trunk.image.width/2));
       createjs.Tween.get(branches, {override:false})
         .to({rotation:impact/2}, 100, createjs.Ease.circIn)
         .to({rotation:impact/4}, 3000, createjs.Ease.elasticOut);

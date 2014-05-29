@@ -283,7 +283,7 @@ var Skier = function() {
     rightSki.rotation = _angle+crosser;
 
     var radians = _angle*Math.PI/180;
-    radians = radians*0.7; // allows for skier leg offset
+    radians = (Math.abs(_angle) > 90) ? radians : radians*0.7; // allows for skier leg offset
     leftSki.x = Math.cos(radians)*-10;
     leftSki.y = Math.sin(radians)*-4;
     rightSki.x = Math.cos(radians)*10;
@@ -796,11 +796,13 @@ var Tree = function() {
   leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
 
   tree.hit = function(player, collision) {
-    player.crash();
+    var coords = trunk.globalToLocal(collision.x, collision.y);
+    var impact = -(coords.x-(trunk.image.width/2));
+    if (Math.abs(impact) < 10) {
+      player.crash();
+    }
+
     if (!hasBeenHit) {
-      var coords = trunk.globalToLocal(collision.x, collision.y);
-      console.log("Tree:hit - ", coords);
-      var impact = -(coords.x-(trunk.image.width/2));
       createjs.Tween.get(branches, {override:false})
         .to({rotation:impact/2}, 100, createjs.Ease.circIn)
         .to({rotation:impact/4}, 3000, createjs.Ease.elasticOut);
