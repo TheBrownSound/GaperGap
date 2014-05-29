@@ -328,7 +328,7 @@ var Player = function() {
   var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
   hitBox.regX = hitBox.image.width/2;
   hitBox.regY = hitBox.image.height/2;
-  hitBox.alpha = 0.2;
+  hitBox.alpha = 0;
 
   player.scaleX = player.scaleY = 0.75;
 
