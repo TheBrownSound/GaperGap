@@ -1,5 +1,6 @@
 var Skier = function() {
   var _angle = 0;
+  var _crossed = false;
   var skier = new createjs.Container();
 
   var _bodyBase = {
@@ -119,13 +120,30 @@ var Skier = function() {
     }
   };
 
+  skier.cross = function(bool) {
+    _crossed = bool;
+  };
+
+  skier.__defineGetter__('crossed', function(){
+    return _crossed;
+  });
+
   skier.__defineSetter__('angle', function(deg) {
     _angle = deg;
 
-    leftSki.rotation = rightSki.rotation = _angle;
+    var crosser = (_crossed) ? 40:0;
+    leftSki.rotation = _angle-crosser;
+    rightSki.rotation = _angle+crosser;
 
-    leftSki.y = (-_angle/90)*2;
-    rightSki.y = (_angle/90)*2;
+    var radians = _angle*Math.PI/180;
+    radians = radians*0.7; // allows for skier leg offset
+    leftSki.x = Math.cos(radians)*-10;
+    leftSki.y = Math.sin(radians)*-4;
+    rightSki.x = Math.cos(radians)*10;
+    rightSki.y = Math.sin(radians)*4;
+    
+    //leftSki.y = (-_angle/90)*2;
+    //rightSki.y = (_angle/90)*2;
 
     if (_angle < -60) {
       pants.gotoAndStop(4);
