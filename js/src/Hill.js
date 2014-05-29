@@ -151,6 +151,10 @@ var Hill = function(player){
     return _width;
   });
 
+  hill.__defineGetter__('distance', function(){
+    return Math.round(-_yPos);
+  });
+
   drawHill(); // trigger draw on create;
 
   return hill;

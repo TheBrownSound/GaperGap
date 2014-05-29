@@ -34,6 +34,7 @@ var Game = function() {
   var momentum = {x: 0, y: 0};
   var player = new Player();
   var hill = new Hill(player);
+  var score = new Score(player);
 
   game.addChild(hill);
 
@@ -56,6 +57,7 @@ var Game = function() {
   function updateGame() {
     player.update();
     hill.update();
+    score.traveled = hill.distance;
   }
 
   function changeScale(perc) {
@@ -118,6 +120,30 @@ var Game = function() {
   });
   
   return game;
+};
+var Score = function(player){
+  var score = {};
+  var _total = 0;
+
+  var _traveled = 0;
+  var debugText = document.getElementById('score');
+
+  function addToScore(amount) {
+    _total += amount;
+    debugText.innerHTML = "Score: "+_total;
+  }
+
+  score.__defineSetter__('traveled', function(distance) {
+    var difference = distance - _traveled;
+    var currentSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
+    _traveled = distance;
+    var travelScore = Math.round(difference*currentSpeed/10);
+
+    addToScore(travelScore);
+    return _traveled;
+  });
+
+  return score;
 };
 var Skier = function() {
   var _angle = 0;
@@ -617,6 +643,10 @@ var Hill = function(player){
 
   hill.__defineGetter__('width', function(){
     return _width;
+  });
+
+  hill.__defineGetter__('distance', function(){
+    return Math.round(-_yPos);
   });
 
   drawHill(); // trigger draw on create;

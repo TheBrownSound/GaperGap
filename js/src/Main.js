@@ -1,6 +1,7 @@
 // Fuse dependencies
 // @depends Utils.js
 // @depends Game.js
+// @depends Score.js
 // @depends Skier.js
 // @depends Player.js
 // @depends Hill.js

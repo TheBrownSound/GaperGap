@@ -3,6 +3,7 @@ var Game = function() {
   var momentum = {x: 0, y: 0};
   var player = new Player();
   var hill = new Hill(player);
+  var score = new Score(player);
 
   game.addChild(hill);
 
@@ -25,6 +26,7 @@ var Game = function() {
   function updateGame() {
     player.update();
     hill.update();
+    score.traveled = hill.distance;
   }
 
   function changeScale(perc) {
