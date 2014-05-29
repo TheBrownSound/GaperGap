@@ -8,7 +8,9 @@ var Player = function() {
   var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
   hitBox.regX = hitBox.image.width/2;
   hitBox.regY = hitBox.image.height/2;
-  hitBox.alpha = 0;
+  hitBox.alpha = 0.2;
+
+  player.scaleX = player.scaleY = 0.75;
 
   player.addChild(hitBox, skier);
 
@@ -168,7 +170,7 @@ var Player = function() {
 
     if (_jump !== 0) {
       _air += _jump;
-      player.scaleX = player.scaleY = (_air/100)+1;
+      player.scaleX = player.scaleY = (_air/100)+0.75;
       _jump -= _gravity;
       if (_air >= 40) {
         skier.cross(true);

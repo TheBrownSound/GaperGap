@@ -5,12 +5,12 @@ var Skier = function() {
 
   var _bodyBase = {
     rotation: 0,
-    y: -16
+    y: -32
   };
 
   var _headBase = {
     rotation: 0,
-    y: -20
+    y: -40
   };
 
   // Body (Holds head and torso)
@@ -26,7 +26,7 @@ var Skier = function() {
   // Torso Sprite
   var torsoData = {
     images: [GaperGap.assets['body-sprite']],
-    frames: {width:70, height:70}
+    frames: {width:140, height:140}
   };
 
   var torsoSprite = new createjs.SpriteSheet(torsoData);
@@ -39,20 +39,20 @@ var Skier = function() {
   // Pants Sprite
   var pantsData = {
     images: [GaperGap.assets['pants-sprite']],
-    frames: {width:40, height:27}
+    frames: {width:80, height:54}
   };
 
   var pantsSprite = new createjs.SpriteSheet(pantsData);
   var pants = new createjs.Sprite(pantsSprite);
   
   pants.regX = pantsData.frames.width/2;
-  pants.y = -pantsData.frames.height+4;
+  pants.y = -pantsData.frames.height+8;
   pants.gotoAndStop(2);
 
   // Ski Sprites
   var skiData = {
     images: [GaperGap.assets['ski-sprite']],
-    frames: {width:20, height:60}
+    frames: {width:40, height:120}
   };
 
   var ski = new createjs.SpriteSheet(skiData);
@@ -65,8 +65,8 @@ var Skier = function() {
   leftSki.gotoAndStop(2);
   rightSki.gotoAndStop(2);
   
-  leftSki.x = -10;
-  rightSki.x = 10;
+  // leftSki.x = -10;
+  // rightSki.x = 10;
 
   body.addChild(torso, head);
   skier.addChild(leftSki, rightSki, pants, body);
@@ -137,10 +137,10 @@ var Skier = function() {
 
     var radians = _angle*Math.PI/180;
     radians = (Math.abs(_angle) > 90) ? radians : radians*0.7; // allows for skier leg offset
-    leftSki.x = Math.cos(radians)*-10;
-    leftSki.y = Math.sin(radians)*-4;
-    rightSki.x = Math.cos(radians)*10;
-    rightSki.y = Math.sin(radians)*4;
+    leftSki.x = Math.cos(radians)*-20;
+    leftSki.y = Math.sin(radians)*-8;
+    rightSki.x = Math.cos(radians)*20;
+    rightSki.y = Math.sin(radians)*8;
     
     //leftSki.y = (-_angle/90)*2;
     //rightSki.y = (_angle/90)*2;
