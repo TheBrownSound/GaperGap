@@ -195,16 +195,28 @@ var Skier = function() {
     var tilt = 10;
     switch (dir) {
       case 'left':
-        body.rotation = _bodyBase.rotation+tilt;
-        head.rotation = _headBase.rotation-tilt;
+        createjs.Tween.get(body, {override:true}).to({
+          rotation:_bodyBase.rotation+tilt
+        }, 100, createjs.Ease.linear);
+        createjs.Tween.get(head, {override:true}).to({
+          rotation:_headBase.rotation-tilt
+        }, 100, createjs.Ease.linear);
         break;
       case 'right':
-        body.rotation = _bodyBase.rotation-tilt;
-        head.rotation = _headBase.rotation+tilt;
+        createjs.Tween.get(body, {override:true}).to({
+          rotation:_bodyBase.rotation-tilt
+        }, 100, createjs.Ease.linear);
+        createjs.Tween.get(head, {override:true}).to({
+          rotation:_headBase.rotation+tilt
+        }, 100, createjs.Ease.linear);
         break;
       default:
-        body.rotation = _bodyBase.rotation;
-        head.rotation = _headBase.rotation;
+        createjs.Tween.get(body, {override:true}).to({
+          rotation:_bodyBase.rotation
+        }, 100, createjs.Ease.linear);
+        createjs.Tween.get(head, {override:true}).to({
+          rotation:_headBase.rotation
+        }, 100, createjs.Ease.linear);
     }
   };
 
