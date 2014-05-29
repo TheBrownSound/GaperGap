@@ -199,7 +199,7 @@ var Skier = function() {
   // Ski Sprites
   var skiData = {
     images: [GaperGap.assets['ski-sprite']],
-    frames: {width:10, height:60}
+    frames: {width:20, height:60}
   };
 
   var ski = new createjs.SpriteSheet(skiData);
