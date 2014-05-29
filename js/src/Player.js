@@ -2,58 +2,7 @@ var Player = function() {
   var player = new createjs.Container();
   var dispatcher = createjs.EventDispatcher.initialize(player);
 
-  // Head
-  var gaper = new createjs.Bitmap(GaperGap.assets['gabe']);
-  
-  gaper.regX = gaper.image.width/2;
-  gaper.regY = gaper.image.height;
-  gaper.y = -24;
-
-  // Body Sprite
-  var bodyData = {
-    images: [GaperGap.assets['body-sprite']],
-    frames: {width:70, height:52}
-  };
-
-  var bodySprite = new createjs.SpriteSheet(bodyData);
-  var body = new createjs.Sprite(bodySprite);
-  
-  body.regX = bodyData.frames.width/2;
-  body.regY = bodyData.frames.height-4;
-  body.y = 4;
-  body.gotoAndStop(0);
-
-  // Pants Sprite
-  var pantsData = {
-    images: [GaperGap.assets['pants-sprite']],
-    frames: {width:40, height:27}
-  };
-
-  var pantsSprite = new createjs.SpriteSheet(pantsData);
-  var pants = new createjs.Sprite(pantsSprite);
-  
-  pants.regX = pantsData.frames.width/2;
-  pants.y = -pantsData.frames.height+4;
-  pants.gotoAndStop(2);
-
-  // Ski Sprites
-  var skiData = {
-    images: [GaperGap.assets['ski-sprite']],
-    frames: {width:10, height:60}
-  };
-
-  var ski = new createjs.SpriteSheet(skiData);
-  var leftSki = new createjs.Sprite(ski);
-  var rightSki = new createjs.Sprite(ski);
-
-  leftSki.regX = rightSki.regX = skiData.frames.width/2;
-  leftSki.regY = rightSki.regY = skiData.frames.height/2;
-  
-  leftSki.gotoAndStop(2);
-  rightSki.gotoAndStop(2);
-  
-  leftSki.x = -10;
-  rightSki.x = 10;
+  var skier = new Skier();
 
   // Hitbox
   var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
@@ -61,7 +10,7 @@ var Player = function() {
   hitBox.regY = hitBox.image.height/2;
   hitBox.alpha = 0;
 
-  player.addChild(hitBox, leftSki, rightSki, pants, body, gaper);
+  player.addChild(hitBox, skier);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
 
@@ -102,8 +51,7 @@ var Player = function() {
     } else {
       var angle = _turnAngle;
       var accel = 85-(Math.abs(angle));
-      accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
-      //console.log("SPEED!: ",accel);
+      accel = Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       _speed += accel;
       if (_speed > _maxSpeed) {
         _speed = _maxSpeed;
@@ -164,15 +112,7 @@ var Player = function() {
 
   player.tuckDown = function(bool) {
     _tucking = bool;
-    if (bool) {
-      body.y =  -6;
-      gaper.y = -20;
-      body.gotoAndStop(1);
-    } else {
-      body.y = 4;
-      gaper.y = -24;
-      body.gotoAndStop(0);
-    }
+    skier.tuck(bool);
   };
 
   player.scrubSpeed = function(bool) {
@@ -181,22 +121,25 @@ var Player = function() {
 
   player.turnLeft = function() {
     _direction = "left";
+    skier.turn(_direction);
   };
 
   player.turnRight = function() {
     _direction = "right";
+    skier.turn(_direction);
   };
 
   player.stopTurning = function() {
     _direction = false;
+    skier.turn(_direction);
   };
 
   player.squat = function() {
-    body.y = 8;
+    skier.squat(true);
   };
 
   player.jump = function(power) {
-    body.y = 4;
+    skier.squat(false);
     if (_jump === 0) { // prevents 'floating'
       _jumpAngle = _turnAngle;
       _jump = power;
@@ -210,10 +153,7 @@ var Player = function() {
 
   player.update = function() {
     var turnAngle = calculateTurnAngle();
-    leftSki.rotation = rightSki.rotation = turnAngle;
-
-    leftSki.y = (-turnAngle/90)*2;
-    rightSki.y = (turnAngle/90)*2;
+    skier.angle = turnAngle;
 
     if (_jump !== 0) {
       _air += _jump;
@@ -223,31 +163,6 @@ var Player = function() {
         player.dispatchEvent('land');
         _air = _jump = 0;
       }
-    }
-
-    //leftSki.x = (-turnAngle/90)*-10;
-    //rightSki.x = (-turnAngle/90)*0.2+10;
-
-    if (turnAngle < -60) {
-      pants.gotoAndStop(4);
-      leftSki.gotoAndStop(4);
-      rightSki.gotoAndStop(4);
-    } else if (turnAngle > 60) {
-      pants.gotoAndStop(0);
-      leftSki.gotoAndStop(0);
-      rightSki.gotoAndStop(0);
-    } else if (turnAngle < -30) {
-      pants.gotoAndStop(3);
-      leftSki.gotoAndStop(3);
-      rightSki.gotoAndStop(3);
-    } else if (turnAngle > 30) {
-      pants.gotoAndStop(1);
-      leftSki.gotoAndStop(1);
-      rightSki.gotoAndStop(1);
-    } else {
-      pants.gotoAndStop(2);
-      leftSki.gotoAndStop(2);
-      rightSki.gotoAndStop(2);
     }
 
     calculateSpeed();

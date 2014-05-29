@@ -119,30 +119,42 @@ var Game = function() {
   
   return game;
 };
-var Player = function() {
-  var player = new createjs.Container();
-  var dispatcher = createjs.EventDispatcher.initialize(player);
+var Skier = function() {
+  var _angle = 0;
+  var skier = new createjs.Container();
 
-  // Head
-  var gaper = new createjs.Bitmap(GaperGap.assets['gabe']);
-  
-  gaper.regX = gaper.image.width/2;
-  gaper.regY = gaper.image.height;
-  gaper.y = -24;
-
-  // Body Sprite
-  var bodyData = {
-    images: [GaperGap.assets['body-sprite']],
-    frames: {width:70, height:52}
+  var _bodyBase = {
+    rotation: 0,
+    y: -16
   };
 
-  var bodySprite = new createjs.SpriteSheet(bodyData);
-  var body = new createjs.Sprite(bodySprite);
-  
-  body.regX = bodyData.frames.width/2;
-  body.regY = bodyData.frames.height-4;
-  body.y = 4;
-  body.gotoAndStop(0);
+  var _headBase = {
+    rotation: 0,
+    y: -20
+  };
+
+  // Body (Holds head and torso)
+  var body = new createjs.Container();
+  body.y = _bodyBase.y;
+
+  // Head
+  var head = new createjs.Bitmap(GaperGap.assets['gabe']);
+  head.regX = head.image.width/2;
+  head.regY = head.image.height*0.7;
+  head.y = _headBase.y;
+
+  // Torso Sprite
+  var torsoData = {
+    images: [GaperGap.assets['body-sprite']],
+    frames: {width:70, height:70}
+  };
+
+  var torsoSprite = new createjs.SpriteSheet(torsoData);
+  var torso = new createjs.Sprite(torsoSprite);
+
+  torso.regX = torsoData.frames.width/2;
+  torso.regY = torsoData.frames.height/2+6;
+  torso.gotoAndStop(0);
 
   // Pants Sprite
   var pantsData = {
@@ -176,13 +188,93 @@ var Player = function() {
   leftSki.x = -10;
   rightSki.x = 10;
 
+  body.addChild(torso, head);
+  skier.addChild(leftSki, rightSki, pants, body);
+
+  skier.turn = function(dir) {
+    var tilt = 10;
+    switch (dir) {
+      case 'left':
+        body.rotation = _bodyBase.rotation+tilt;
+        head.rotation = _headBase.rotation-tilt;
+        break;
+      case 'right':
+        body.rotation = _bodyBase.rotation-tilt;
+        head.rotation = _headBase.rotation+tilt;
+        break;
+      default:
+        body.rotation = _bodyBase.rotation;
+        head.rotation = _headBase.rotation;
+    }
+  };
+
+  skier.squat = function(bool) {
+    if (bool) {
+      body.y = _bodyBase.y+4;
+    } else {
+      body.y = _bodyBase.y;
+    }
+  };
+
+  skier.tuck = function(bool) {
+    if (bool) {
+      body.y = _bodyBase.y+4;
+      head.y = _headBase.y+2;
+      torso.gotoAndStop(1);
+    } else {
+      body.y = _bodyBase.y;
+      head.y = _headBase.y;
+      torso.gotoAndStop(0);
+    }
+  };
+
+  skier.__defineSetter__('angle', function(deg) {
+    _angle = deg;
+
+    leftSki.rotation = rightSki.rotation = _angle;
+
+    leftSki.y = (-_angle/90)*2;
+    rightSki.y = (_angle/90)*2;
+
+    if (_angle < -60) {
+      pants.gotoAndStop(4);
+      leftSki.gotoAndStop(4);
+      rightSki.gotoAndStop(4);
+    } else if (_angle > 60) {
+      pants.gotoAndStop(0);
+      leftSki.gotoAndStop(0);
+      rightSki.gotoAndStop(0);
+    } else if (_angle < -30) {
+      pants.gotoAndStop(3);
+      leftSki.gotoAndStop(3);
+      rightSki.gotoAndStop(3);
+    } else if (_angle > 30) {
+      pants.gotoAndStop(1);
+      leftSki.gotoAndStop(1);
+      rightSki.gotoAndStop(1);
+    } else {
+      pants.gotoAndStop(2);
+      leftSki.gotoAndStop(2);
+      rightSki.gotoAndStop(2);
+    }
+    return _angle;
+  });
+
+  return skier;
+};
+var Player = function() {
+  var player = new createjs.Container();
+  var dispatcher = createjs.EventDispatcher.initialize(player);
+
+  var skier = new Skier();
+
   // Hitbox
   var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
   hitBox.regX = hitBox.image.width/2;
   hitBox.regY = hitBox.image.height/2;
   hitBox.alpha = 0;
 
-  player.addChild(hitBox, leftSki, rightSki, pants, body, gaper);
+  player.addChild(hitBox, skier);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
 
@@ -223,8 +315,7 @@ var Player = function() {
     } else {
       var angle = _turnAngle;
       var accel = 85-(Math.abs(angle));
-      accel =  Math.round( accel * 10) / 1000; // decreases number/decimal for animation
-      //console.log("SPEED!: ",accel);
+      accel = Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       _speed += accel;
       if (_speed > _maxSpeed) {
         _speed = _maxSpeed;
@@ -285,15 +376,7 @@ var Player = function() {
 
   player.tuckDown = function(bool) {
     _tucking = bool;
-    if (bool) {
-      body.y =  -6;
-      gaper.y = -20;
-      body.gotoAndStop(1);
-    } else {
-      body.y = 4;
-      gaper.y = -24;
-      body.gotoAndStop(0);
-    }
+    skier.tuck(bool);
   };
 
   player.scrubSpeed = function(bool) {
@@ -302,22 +385,25 @@ var Player = function() {
 
   player.turnLeft = function() {
     _direction = "left";
+    skier.turn(_direction);
   };
 
   player.turnRight = function() {
     _direction = "right";
+    skier.turn(_direction);
   };
 
   player.stopTurning = function() {
     _direction = false;
+    skier.turn(_direction);
   };
 
   player.squat = function() {
-    body.y = 8;
+    skier.squat(true);
   };
 
   player.jump = function(power) {
-    body.y = 4;
+    skier.squat(false);
     if (_jump === 0) { // prevents 'floating'
       _jumpAngle = _turnAngle;
       _jump = power;
@@ -331,10 +417,7 @@ var Player = function() {
 
   player.update = function() {
     var turnAngle = calculateTurnAngle();
-    leftSki.rotation = rightSki.rotation = turnAngle;
-
-    leftSki.y = (-turnAngle/90)*2;
-    rightSki.y = (turnAngle/90)*2;
+    skier.angle = turnAngle;
 
     if (_jump !== 0) {
       _air += _jump;
@@ -344,31 +427,6 @@ var Player = function() {
         player.dispatchEvent('land');
         _air = _jump = 0;
       }
-    }
-
-    //leftSki.x = (-turnAngle/90)*-10;
-    //rightSki.x = (-turnAngle/90)*0.2+10;
-
-    if (turnAngle < -60) {
-      pants.gotoAndStop(4);
-      leftSki.gotoAndStop(4);
-      rightSki.gotoAndStop(4);
-    } else if (turnAngle > 60) {
-      pants.gotoAndStop(0);
-      leftSki.gotoAndStop(0);
-      rightSki.gotoAndStop(0);
-    } else if (turnAngle < -30) {
-      pants.gotoAndStop(3);
-      leftSki.gotoAndStop(3);
-      rightSki.gotoAndStop(3);
-    } else if (turnAngle > 30) {
-      pants.gotoAndStop(1);
-      leftSki.gotoAndStop(1);
-      rightSki.gotoAndStop(1);
-    } else {
-      pants.gotoAndStop(2);
-      leftSki.gotoAndStop(2);
-      rightSki.gotoAndStop(2);
     }
 
     calculateSpeed();
@@ -647,22 +705,25 @@ var Tree = function() {
   var trunk = new createjs.Bitmap(GaperGap.assets['trunk']);
   var branches = new createjs.Container();
   var leaves = new createjs.Bitmap(
-    GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,2)]
+    GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,3)]
   );
   
   branches.addChild(leaves);
 
   trunk.regX = trunk.image.width/2;
   trunk.regY = trunk.image.height;
-  branches.regY = trunk.image.height*0.7;
+  branches.regY = trunk.image.height;
   leaves.regX = leaves.image.width/2;
-  leaves.regY = leaves.image.height*0.9;
+  leaves.regY = leaves.image.height*0.8;
+
+  leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
 
   tree.hit = function(player, collision) {
     player.crash();
     if (!hasBeenHit) {
       var coords = trunk.globalToLocal(collision.x, collision.y);
-      var impact = -(coords.x);
+      console.log("Tree:hit - ", coords);
+      var impact = -(coords.x-(trunk.image.width/2));
       createjs.Tween.get(branches, {override:false})
         .to({rotation:impact/2}, 100, createjs.Ease.circIn)
         .to({rotation:impact/4}, 3000, createjs.Ease.elasticOut);
@@ -692,7 +753,8 @@ var Tree = function() {
   });
 
   tree.__defineSetter__('y', function(val){
-    _y = trunk.y = branches.y = val;
+    _y = trunk.y = val;
+    branches.y = val-20;
     return _y;
   });
 
@@ -806,6 +868,7 @@ var GaperGap = (function(){
       {src:"trunk.png", id:"trunk"},
       {src:"tree_1.png", id:"tree-1"},
       {src:"tree_2.png", id:"tree-2"},
+      {src:"tree_3.png", id:"tree-3"},
       {src:"jump.png", id:"jump"},
       {src:"hill_background.png", id:"hill-background"}
     ];

@@ -6,22 +6,25 @@ var Tree = function() {
   var trunk = new createjs.Bitmap(GaperGap.assets['trunk']);
   var branches = new createjs.Container();
   var leaves = new createjs.Bitmap(
-    GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,2)]
+    GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,3)]
   );
   
   branches.addChild(leaves);
 
   trunk.regX = trunk.image.width/2;
   trunk.regY = trunk.image.height;
-  branches.regY = trunk.image.height*0.7;
+  branches.regY = trunk.image.height;
   leaves.regX = leaves.image.width/2;
-  leaves.regY = leaves.image.height*0.9;
+  leaves.regY = leaves.image.height*0.8;
+
+  leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
 
   tree.hit = function(player, collision) {
     player.crash();
     if (!hasBeenHit) {
       var coords = trunk.globalToLocal(collision.x, collision.y);
-      var impact = -(coords.x);
+      console.log("Tree:hit - ", coords);
+      var impact = -(coords.x-(trunk.image.width/2));
       createjs.Tween.get(branches, {override:false})
         .to({rotation:impact/2}, 100, createjs.Ease.circIn)
         .to({rotation:impact/4}, 3000, createjs.Ease.elasticOut);
@@ -51,7 +54,8 @@ var Tree = function() {
   });
 
   tree.__defineSetter__('y', function(val){
-    _y = trunk.y = branches.y = val;
+    _y = trunk.y = val;
+    branches.y = val-20;
     return _y;
   });
 

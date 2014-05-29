@@ -1,6 +1,7 @@
 // Fuse dependencies
 // @depends Utils.js
 // @depends Game.js
+// @depends Skier.js
 // @depends Player.js
 // @depends Hill.js
 // @depends Section.js
@@ -87,6 +88,7 @@ var GaperGap = (function(){
       {src:"trunk.png", id:"trunk"},
       {src:"tree_1.png", id:"tree-1"},
       {src:"tree_2.png", id:"tree-2"},
+      {src:"tree_3.png", id:"tree-3"},
       {src:"jump.png", id:"jump"},
       {src:"hill_background.png", id:"hill-background"}
     ];
