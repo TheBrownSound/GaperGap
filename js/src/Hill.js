@@ -11,12 +11,13 @@ var Hill = function(player){
   var hill = new createjs.Container();
   var snow = new createjs.Shape();
   var hillForeground = new createjs.Container();
+  var hillParticles = new createjs.Container();
   var hillBackground = new createjs.Container();
 
   // var hillDebugMarker = new createjs.Shape();
 
   // hillWrapper.addChild(hillDebugMarker);
-  hill.addChild(snow, hillBackground, player, hillForeground);
+  hill.addChild(snow, hillBackground, hillParticles, player, hillForeground);
 
   player.addEventListener('jump', playerJumped);
   player.addEventListener('land', playerLanded);
@@ -61,6 +62,8 @@ var Hill = function(player){
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
     snow.x = (snow.x+player.speed.x) % 400;
     snow.y = (snow.y+player.speed.y) % 400;
+    hillParticles.x += player.speed.x;
+    hillParticles.y += player.speed.y;
     _xPos += player.speed.x;
     _yPos += player.speed.y;
     
