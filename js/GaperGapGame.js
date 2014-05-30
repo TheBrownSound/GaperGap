@@ -376,7 +376,8 @@ var Player = function() {
   var _axisSpeed = {
     x: 0,
     y: 0
-  }
+  };
+
   var _speedMomentum = 0;
   var _maxSpeed = 8;
 
@@ -514,9 +515,9 @@ var Player = function() {
   };
 
   player.jump = function(thrust, drop) {
-    _drop = drop || 0;
     skier.squat(false);
     if (!player.airborne) { // prevents 'floating'
+      _drop = drop || 0;
       _jumpAngle = _turnAngle;
       _verticalMomentum = thrust;
       player.dispatchEvent('jump');
@@ -547,8 +548,10 @@ var Player = function() {
     } else if (_drop > 0) {
       _fallMomentum += _gravity;
       _drop -= _fallMomentum;
-    } else {
-      _fallMomentum = _drop = 0;
+      if (_drop <= 0) {
+        player.dispatchEvent('land');
+        _fallMomentum = _drop = 0;
+      }
     }
 
     calculateSpeed();
@@ -565,7 +568,7 @@ var Player = function() {
   });
 
    player.__defineGetter__('airborne', function(){
-    return (_air > 0);
+    return (_air > 0 || _drop > 0);
   });
 
   player.__defineGetter__('hitArea', function(){
