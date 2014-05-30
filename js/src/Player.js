@@ -100,7 +100,7 @@ var Player = function() {
       turnSpeed = 2;
     }
     _turnAngle += (_turnMomentum/_acceleration)*turnSpeed;
-    if (_air <= 0) {
+    if (!player.airborne) {
       if (_turnAngle > _maxTurnAngle) {
         _turnAngle = _maxTurnAngle;
       } else if (_turnAngle < -_maxTurnAngle) {
@@ -158,7 +158,7 @@ var Player = function() {
 
   player.jump = function(power) {
     skier.squat(false);
-    if (_jump === 0) { // prevents 'floating'
+    if (!player.airborne) { // prevents 'floating'
       _jumpAngle = _turnAngle;
       _jump = power;
       player.dispatchEvent('jump');
@@ -167,6 +167,7 @@ var Player = function() {
 
   player.fall = function(feature) {
     if (feature != _fallFeature) {
+      _jumpAngle = _turnAngle;
       _fallFeature = feature;
       _falling += _fallGravity;
     }
@@ -207,7 +208,7 @@ var Player = function() {
   };
 
   player.__defineGetter__('speed', function(){
-    var angle = (_air > 0) ? _jumpAngle : _turnAngle;
+    var angle = (player.airborne) ? _jumpAngle : _turnAngle;
     return {
       x: Math.sin(angle*Math.PI/180)*_speed,
       y: -(Math.cos(angle*Math.PI/180)*_speed+_falling)
