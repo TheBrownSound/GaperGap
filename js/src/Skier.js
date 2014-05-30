@@ -46,7 +46,7 @@ var Skier = function() {
   var pants = new createjs.Sprite(pantsSprite);
   
   pants.regX = pantsData.frames.width/2;
-  pants.y = -pantsData.frames.height+8;
+  pants.y = -pantsData.frames.height+12;
   pants.gotoAndStop(2);
 
   // Ski Sprites
@@ -60,7 +60,7 @@ var Skier = function() {
   var rightSki = new createjs.Sprite(ski);
 
   leftSki.regX = rightSki.regX = skiData.frames.width/2;
-  leftSki.regY = rightSki.regY = skiData.frames.height/2;
+  leftSki.regY = rightSki.regY = skiData.frames.height/2-8;
   
   leftSki.gotoAndStop(2);
   rightSki.gotoAndStop(2);
@@ -145,24 +145,32 @@ var Skier = function() {
     //leftSki.y = (-_angle/90)*2;
     //rightSki.y = (_angle/90)*2;
 
-    if (_angle < -60) {
-      pants.gotoAndStop(4);
+    if (_angle < -70) {
+      pants.gotoAndStop(6);
       leftSki.gotoAndStop(4);
       rightSki.gotoAndStop(4);
-    } else if (_angle > 60) {
+    } else if (_angle > 70) {
       pants.gotoAndStop(0);
       leftSki.gotoAndStop(0);
       rightSki.gotoAndStop(0);
-    } else if (_angle < -30) {
-      pants.gotoAndStop(3);
+    } else if (_angle < -50) {
+      pants.gotoAndStop(5);
       leftSki.gotoAndStop(3);
       rightSki.gotoAndStop(3);
-    } else if (_angle > 30) {
+    } else if (_angle > 50) {
       pants.gotoAndStop(1);
       leftSki.gotoAndStop(1);
       rightSki.gotoAndStop(1);
-    } else {
+    } else if (_angle < -20) {
+      pants.gotoAndStop(4);
+      leftSki.gotoAndStop(3);
+      rightSki.gotoAndStop(3);
+    } else if (_angle > 20) {
       pants.gotoAndStop(2);
+      leftSki.gotoAndStop(1);
+      rightSki.gotoAndStop(1);
+    } else {
+      pants.gotoAndStop(3);
       leftSki.gotoAndStop(2);
       rightSki.gotoAndStop(2);
     }

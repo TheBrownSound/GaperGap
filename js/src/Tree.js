@@ -3,8 +3,11 @@ var Tree = function() {
   var hasBeenHit = false;
 
   var tree = {};
-  var trunk = new createjs.Bitmap(GaperGap.assets['trunk']);
+  
   var branches = new createjs.Container();
+  var trunk = new createjs.Bitmap(
+    GaperGap.assets['trunk-'+GaperGap.utils.getRandomInt(1,2)]
+  );
   var leaves = new createjs.Bitmap(
     GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,3)]
   );
