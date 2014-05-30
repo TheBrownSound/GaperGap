@@ -22,8 +22,7 @@ var Section = function(size, density, coords) {
 
   if (coords.y >= 0) {
     while (_features.length < density) {
-      var switcher = GaperGap.utils.getRandomInt(0,10);
-      var feature = (switcher > 9) ? new Jump() : new Tree();
+      var feature = getRandomFeature();
 
       feature.x = GaperGap.utils.getRandomInt(0,size);
       feature.y = GaperGap.utils.getRandomInt(0,size);
@@ -46,6 +45,18 @@ var Section = function(size, density, coords) {
   }
 
   //_background.addChild(debugOutline);
+
+  function getRandomFeature() {
+    var selector = GaperGap.utils.getRandomInt(0,10);
+    switch(selector) {
+      case 1:
+        return new Cliff();
+      case 2:
+        return new Jump();
+      default:
+        return new Tree();
+    }
+  }
 
   function sortFeatures(child1, child2, options) {
     if (child1.y > child2.y) { return 1; }

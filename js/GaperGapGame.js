@@ -389,11 +389,16 @@ var Player = function() {
   var _jump = 0;
   var _air = 0;
   var _jumpAngle = 0;
-  var _gravity = 0.12;
+  var _jumpGravity = 0.12;
+
+  // Falling
+  var _fallFeature = false;
+  var _falling = 0;
+  var _fallGravity = 0.5;
 
   function calculateSpeed() {
     // calculate potential speed momentum
-    if (_air > 0) {
+    if (player.airborne) {
       return _speed;
     } else if (_scrubbing) {
       _speed -= _scrubRate;
@@ -436,7 +441,7 @@ var Player = function() {
     }
 
     var turnSpeed = 4;
-    if (_air > 0) {
+    if (player.airborne) {
       turnSpeed = 6;
     } else if (_tucking) {
       turnSpeed = 2;
@@ -507,6 +512,13 @@ var Player = function() {
     }
   };
 
+  player.fall = function(feature) {
+    if (feature != _fallFeature) {
+      _fallFeature = feature;
+      _falling += _fallGravity;
+    }
+  };
+
   player.crash = function() {
     _speed = 0;
   };
@@ -515,10 +527,10 @@ var Player = function() {
     var turnAngle = calculateTurnAngle();
     skier.angle = turnAngle;
 
-    if (_jump !== 0) {
+    if (!_falling && _jump !== 0) {
       _air += _jump;
       player.scaleX = player.scaleY = (_air/100)+0.75;
-      _jump -= _gravity;
+      _jump -= _jumpGravity;
       if (_air >= 40) {
         skier.cross(true);
       } else if (skier.crossed) {
@@ -529,6 +541,13 @@ var Player = function() {
         player.dispatchEvent('land');
         _air = _jump = 0;
       }
+    } else if (_falling > 0) {
+      var hit = ndgmr.checkPixelCollision(player.hitArea, _fallFeature.hitArea, 0, true);
+      if (!hit) {
+        _falling = 0;
+      } else {
+        _falling += _fallGravity;
+      }
     }
 
     calculateSpeed();
@@ -538,7 +557,7 @@ var Player = function() {
     var angle = (_air > 0) ? _jumpAngle : _turnAngle;
     return {
       x: Math.sin(angle*Math.PI/180)*_speed,
-      y: -(Math.cos(angle*Math.PI/180)*_speed)
+      y: -(Math.cos(angle*Math.PI/180)*_speed+_falling)
     };
   });
 
@@ -547,7 +566,7 @@ var Player = function() {
   });
 
    player.__defineGetter__('airborne', function(){
-    return (_air > 0);
+    return (_air > 0 || _falling > 0);
   });
 
   player.__defineGetter__('hitArea', function(){
@@ -745,8 +764,7 @@ var Section = function(size, density, coords) {
 
   if (coords.y >= 0) {
     while (_features.length < density) {
-      var switcher = GaperGap.utils.getRandomInt(0,10);
-      var feature = (switcher > 9) ? new Jump() : new Tree();
+      var feature = getRandomFeature();
 
       feature.x = GaperGap.utils.getRandomInt(0,size);
       feature.y = GaperGap.utils.getRandomInt(0,size);
@@ -769,6 +787,18 @@ var Section = function(size, density, coords) {
   }
 
   //_background.addChild(debugOutline);
+
+  function getRandomFeature() {
+    var selector = GaperGap.utils.getRandomInt(0,10);
+    switch(selector) {
+      case 1:
+        return new Cliff();
+      case 2:
+        return new Jump();
+      default:
+        return new Tree();
+    }
+  }
 
   function sortFeatures(child1, child2, options) {
     if (child1.y > child2.y) { return 1; }
@@ -911,6 +941,29 @@ var Jump = function() {
 
   return jump;
 };
+var Cliff = function() {
+
+  var cliff = new createjs.Bitmap(
+    GaperGap.assets['cliff-'+GaperGap.utils.getRandomInt(1,1)]
+  );
+
+  cliff.regX = cliff.image.width/2;
+  cliff.regY = cliff.image.height/2;
+
+  cliff.hit = function(player, collision) {
+    player.fall(cliff);
+  };
+
+  cliff.__defineGetter__('hitArea', function(){
+    return cliff;
+  });
+
+  cliff.__defineGetter__('background', function(){
+    return cliff;
+  });
+  
+  return cliff;
+};
 
 // Parent Game Logic
 var GaperGap = (function(){
@@ -994,6 +1047,7 @@ var GaperGap = (function(){
       {src:"tree_1.png", id:"tree-1"},
       {src:"tree_2.png", id:"tree-2"},
       {src:"tree_3.png", id:"tree-3"},
+      {src:"cliff_1.png", id:"cliff-1"},
       {src:"jump.png", id:"jump"},
       {src:"hill_background.png", id:"hill-background"},
       {src:"sky.png", id:"sky"}
