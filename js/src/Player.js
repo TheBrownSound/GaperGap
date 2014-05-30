@@ -4,6 +4,14 @@ var Player = function() {
 
   var skier = new Skier();
 
+  var shadow = new createjs.Shape();
+  shadow.graphics.beginFill('#000');
+  shadow.graphics.drawEllipse(0,0,60,30);
+  shadow.graphics.endFill();
+  shadow.regX = 30;
+  shadow.regY = 15;
+  shadow.alpha = 0.5;
+
   // Hitbox
   var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
   hitBox.regX = hitBox.image.width/2;
@@ -12,12 +20,16 @@ var Player = function() {
 
   player.scaleX = player.scaleY = 0.75;
 
-  player.addChild(hitBox, skier);
+  player.addChild(hitBox, shadow, skier);
 
   var _acceleration = 10;//updates it takes to get to full greatest turn amount
 
   // Speed Variables
   var _speed = 0;
+  var _axisSpeed = {
+    x: 0,
+    y: 0
+  }
   var _speedMomentum = 0;
   var _maxSpeed = 8;
 
@@ -38,25 +50,20 @@ var Player = function() {
   var _maxTurnAngle = 90;
 
   // Jumping
-  var _jumping = false;
-  var _jump = 0;
-  var _air = 0;
+  var _air = 0; // vertical representation
+  var _drop = 0; // speed accelerator
+  var _verticalMomentum = 0;
+  var _fallMomentum = 0;
+  var _gravity = 0.2;
   var _jumpAngle = 0;
-  var _jumpGravity = 0.12;
-
-  // Falling
-  var _fallFeature = false;
-  var _falling = 0;
-  var _fallGravity = 0.5;
 
   function calculateSpeed() {
     // calculate potential speed momentum
-    if (player.airborne) {
-      return _speed;
-    } else if (_scrubbing) {
+    var angle = (player.airborne) ? _jumpAngle : _turnAngle;
+    
+    if (_scrubbing) {
       _speed -= _scrubRate;
     } else {
-      var angle = _turnAngle;
       var accel = 85-(Math.abs(angle));
       accel = Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       _speed += accel;
@@ -69,8 +76,11 @@ var Player = function() {
     if (_speed < 0) {
       _speed = 0;
     }
-    
-    return _speed;
+
+    _axisSpeed = {
+      x: Math.sin(angle*Math.PI/180)*_speed,
+      y: -(Math.cos(angle*Math.PI/180)*_speed+_fallMomentum)
+    };
   }
 
   function calculateTuckModifier() {
@@ -156,20 +166,13 @@ var Player = function() {
     skier.squat(true);
   };
 
-  player.jump = function(power) {
+  player.jump = function(thrust, drop) {
+    _drop = drop || 0;
     skier.squat(false);
     if (!player.airborne) { // prevents 'floating'
       _jumpAngle = _turnAngle;
-      _jump = power;
+      _verticalMomentum = thrust;
       player.dispatchEvent('jump');
-    }
-  };
-
-  player.fall = function(feature) {
-    if (feature != _fallFeature) {
-      _jumpAngle = _turnAngle;
-      _fallFeature = feature;
-      _falling += _fallGravity;
     }
   };
 
@@ -181,38 +184,33 @@ var Player = function() {
     var turnAngle = calculateTurnAngle();
     skier.angle = turnAngle;
 
-    if (!_falling && _jump !== 0) {
-      _air += _jump;
+    if (_verticalMomentum > 0 || _air > 0) {
+      _air += _verticalMomentum;
       player.scaleX = player.scaleY = (_air/100)+0.75;
-      _jump -= _jumpGravity;
-      if (_air >= 40) {
-        skier.cross(true);
-      } else if (skier.crossed) {
-        skier.cross(false);
+      _verticalMomentum -= _gravity;
+
+      if (_drop > 0) {
+        _drop = 0;
       }
       
       if (_air <= 0) {
         player.dispatchEvent('land');
-        _air = _jump = 0;
+        _air = _verticalMomentum = 0;
       }
-    } else if (_falling > 0) {
-      var hit = ndgmr.checkPixelCollision(player.hitArea, _fallFeature.hitArea, 0, true);
-      if (!hit) {
-        _falling = 0;
-      } else {
-        _falling += _fallGravity;
-      }
+    } else if (_drop > 0) {
+      _fallMomentum += _gravity;
+      _drop -= _fallMomentum;
+    } else {
+      _fallMomentum = _drop = 0;
     }
 
     calculateSpeed();
+
+    shadow.y = _air+_drop;
   };
 
   player.__defineGetter__('speed', function(){
-    var angle = (player.airborne) ? _jumpAngle : _turnAngle;
-    return {
-      x: Math.sin(angle*Math.PI/180)*_speed,
-      y: -(Math.cos(angle*Math.PI/180)*_speed+_falling)
-    };
+    return _axisSpeed;
   });
 
   player.__defineGetter__('maxSpeed', function(){
@@ -220,7 +218,7 @@ var Player = function() {
   });
 
    player.__defineGetter__('airborne', function(){
-    return (_air > 0 || _falling > 0);
+    return (_air > 0);
   });
 
   player.__defineGetter__('hitArea', function(){

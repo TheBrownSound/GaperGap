@@ -8,7 +8,9 @@ var Cliff = function() {
   cliff.regY = cliff.image.height/2;
 
   cliff.hit = function(player, collision) {
-    player.fall(cliff);
+    var coords = cliff.globalToLocal(collision.x, collision.y);
+    console.log("Cliff:hit - ", coords.y);
+    player.jump(0, cliff.image.height-coords.y);
   };
 
   cliff.__defineGetter__('hitArea', function(){
