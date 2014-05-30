@@ -92,7 +92,8 @@ var GaperGap = (function(){
       {src:"tree_2.png", id:"tree-2"},
       {src:"tree_3.png", id:"tree-3"},
       {src:"jump.png", id:"jump"},
-      {src:"hill_background.png", id:"hill-background"}
+      {src:"hill_background.png", id:"hill-background"},
+      {src:"sky.png", id:"sky"}
     ];
 
     preloader = new createjs.LoadQueue(true, "assets/");

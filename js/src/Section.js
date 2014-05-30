@@ -8,34 +8,44 @@ var Section = function(size, density, coords) {
     y: coords.y || 0
   };
 
+  console.log('coords:', coords);
+
   var _features = [];
   var _foreground = new createjs.Container();
   var _background = new createjs.Container();
   var trackShape = new createjs.Shape();
   //var debugOutline = new createjs.Shape();
-  // debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
+  //debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
 
   //_background.addChild(trackShape);
   //trackShape.alpha = 0.3;
 
-  while (_features.length < density) {
-    var switcher = GaperGap.utils.getRandomInt(0,10);
-    var feature = (switcher > 9) ? new Jump() : new Tree();
+  if (coords.y >= 0) {
+    while (_features.length < density) {
+      var switcher = GaperGap.utils.getRandomInt(0,10);
+      var feature = (switcher > 9) ? new Jump() : new Tree();
 
-    feature.x = GaperGap.utils.getRandomInt(0,size);
-    feature.y = GaperGap.utils.getRandomInt(0,size);
-    _features.push(feature);
+      feature.x = GaperGap.utils.getRandomInt(0,size);
+      feature.y = GaperGap.utils.getRandomInt(0,size);
+      _features.push(feature);
 
-    if (feature.background) {
-      _background.addChild(feature.background);
+      if (feature.background) {
+        _background.addChild(feature.background);
+      }
+      if (feature.foreground) {
+        _foreground.addChild(feature.foreground);
+      }
     }
-    if (feature.foreground) {
-      _foreground.addChild(feature.foreground);
-    }
+
+    _background.sortChildren(sortFeatures);
+    _foreground.sortChildren(sortFeatures);
+  } else {
+    // Top section, add sky graphic instead
+    var sky = new createjs.Bitmap(GaperGap.assets['sky']);
+    _background.addChild(sky);
   }
 
-  _background.sortChildren(sortFeatures);
-  _foreground.sortChildren(sortFeatures);
+  //_background.addChild(debugOutline);
 
   function sortFeatures(child1, child2, options) {
     if (child1.y > child2.y) { return 1; }
