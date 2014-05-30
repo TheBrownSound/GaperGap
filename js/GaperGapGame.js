@@ -268,7 +268,7 @@ var Skier = function() {
   };
 
   skier.cross = function(bool) {
-    _crossed = bool;
+    //_crossed = bool;
   };
 
   skier.__defineGetter__('crossed', function(){
