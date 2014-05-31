@@ -80,7 +80,7 @@ var Player = function() {
 
     _axisSpeed = {
       x: Math.sin(angle*Math.PI/180)*_speed,
-      y: -(Math.cos(angle*Math.PI/180)*_speed+_fallMomentum)
+      y: -(Math.cos(angle*Math.PI/180)*_speed-_verticalMomentum)
     };
   }
 
@@ -139,12 +139,6 @@ var Player = function() {
     }
   }
 
-  function checkForLanding() {
-    if (_air === 0 && _drop === 0) {
-      player.dispatchEvent('land');
-    }
-  }
-
   player.tuckDown = function(bool) {
     _tucking = bool;
     skier.tuck(bool);
@@ -197,26 +191,33 @@ var Player = function() {
     var turnAngle = calculateTurnAngle();
     skier.angle = turnAngle;
 
-    if (_verticalMomentum > 0 || _air > 0) {
-      _air += _verticalMomentum;
-      player.scaleX = player.scaleY = (_air/100)+0.75;
-      _verticalMomentum -= _gravity;
-      if (_air <= 0) {
-        _air = _verticalMomentum = 0;
-        checkForLanding();
-      }
-    }
+    if (_verticalMomentum > 0 || _air > 0 || _drop > 0) {
 
-    if (_drop > 0) {
-      _fallMomentum += _gravity;
-      _drop -= _fallMomentum;
-      if (_drop <= 0) {
-        _drop = _fallMomentum = 0;
-        checkForLanding();
+      if (_verticalMomentum > 0 || _air > 0) { // Figure out if you need to scale the player for air
+        _air += _verticalMomentum;
+        if (_air <= 0) {
+          _air = 0;
+        }
+        player.scaleX = player.scaleY = (_air/100)+0.75;
+      }
+
+      _verticalMomentum -= _gravity; // apply gravity after air
+      
+      if (_drop > 0) {
+        _drop += _verticalMomentum;
+        if (_drop <= 0) {
+          _drop = 0;
+        }
+      }
+      // check for landing
+      if (_air === 0 && _drop === 0) {
+        _verticalMomentum = 0;
+        player.dispatchEvent('land');
       }
     }
 
     shadow.y = _air+_drop;
+    shadow.alpha = (shadow.y > 0) ? shadow.y/1000 : 0;
 
     calculateSpeed();
   };
