@@ -217,14 +217,14 @@ var Skier = function() {
   // Pants Sprite
   var pantsData = {
     images: [GaperGap.assets['pants-sprite']],
-    frames: {width:80, height:54}
+    frames: {width:80, height:56}
   };
 
   var pantsSprite = new createjs.SpriteSheet(pantsData);
   var pants = new createjs.Sprite(pantsSprite);
   
   pants.regX = pantsData.frames.width/2;
-  pants.y = -pantsData.frames.height+12;
+  pants.y = -pantsData.frames.height+14;
   pants.gotoAndStop(2);
 
   // Ski Sprites
@@ -313,17 +313,32 @@ var Skier = function() {
     leftSki.rotation = _angle-crosser;
     rightSki.rotation = _angle+crosser;
 
+    var lift = (_angle < -90 || _angle > 90) ? 10 : 0;
+
     var radians = _angle*Math.PI/180;
     radians = (Math.abs(_angle) > 90) ? radians : radians*0.7; // allows for skier leg offset
     leftSki.x = Math.cos(radians)*-20;
-    leftSki.y = Math.sin(radians)*-8;
+    leftSki.y = Math.sin(radians)*-8-lift;
     rightSki.x = Math.cos(radians)*20;
-    rightSki.y = Math.sin(radians)*8;
+    rightSki.y = Math.sin(radians)*8-lift;
     
-    //leftSki.y = (-_angle/90)*2;
-    //rightSki.y = (_angle/90)*2;
-
-    if (_angle < -70) {
+    if (_angle < -150 || _angle > 150) {
+      pants.gotoAndStop(9);
+      leftSki.gotoAndStop(2);
+      rightSki.gotoAndStop(2);
+    } else if (_angle < -120) {
+      pants.gotoAndStop(10);
+    } else if (_angle > 120) {
+      pants.gotoAndStop(8);
+    } else if (_angle < -90) {
+      pants.gotoAndStop(11);
+      leftSki.gotoAndStop(3);
+      rightSki.gotoAndStop(3);
+    } else if (_angle > 90) {
+      pants.gotoAndStop(7);
+      leftSki.gotoAndStop(1);
+      rightSki.gotoAndStop(1);
+    } else if (_angle < -70) {
       pants.gotoAndStop(6);
       leftSki.gotoAndStop(4);
       rightSki.gotoAndStop(4);
