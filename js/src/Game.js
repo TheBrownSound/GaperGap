@@ -42,8 +42,8 @@ var Game = function() {
   }
 
   function changeScale(perc) {
-    if (perc != game.scaleX) {
-      createjs.Tween.get(game, {override:true}).to({
+    if (perc != hill.scaleX) {
+      createjs.Tween.get(hill, {override:true}).to({
         scaleX:perc,
         scaleY:perc
       }, 4000, createjs.Ease.sineOut);

@@ -73,8 +73,8 @@ var Game = function() {
   }
 
   function changeScale(perc) {
-    if (perc != game.scaleX) {
-      createjs.Tween.get(game, {override:true}).to({
+    if (perc != hill.scaleX) {
+      createjs.Tween.get(hill, {override:true}).to({
         scaleX:perc,
         scaleY:perc
       }, 4000, createjs.Ease.sineOut);
@@ -413,7 +413,6 @@ var Player = function() {
   var _air = 0; // vertical representation
   var _drop = 0; // speed accelerator
   var _verticalMomentum = 0;
-  var _fallMomentum = 0;
   var _gravity = 0.2;
   var _airAngle = 0;
 
@@ -427,10 +426,10 @@ var Player = function() {
       var accel = 85-(Math.abs(angle));
       accel = Math.round( accel * 10) / 1000; // decreases number/decimal for animation
       _speed += accel;
-      if (_speed > _maxSpeed) {
-        _speed = _maxSpeed;
+      var max = _maxSpeed+calculateTuckModifier();
+      if (_speed > max) {
+        _speed = max;
       }
-      _speed += calculateTuckModifier();
     }
 
     if (_speed < 0) {
