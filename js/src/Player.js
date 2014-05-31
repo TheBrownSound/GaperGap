@@ -56,11 +56,11 @@ var Player = function() {
   var _verticalMomentum = 0;
   var _fallMomentum = 0;
   var _gravity = 0.2;
-  var _jumpAngle = 0;
+  var _airAngle = 0;
 
   function calculateSpeed() {
     // calculate potential speed momentum
-    var angle = (player.airborne) ? _jumpAngle : _turnAngle;
+    var angle = (player.airborne) ? _airAngle : _turnAngle;
     
     if (_scrubbing) {
       _speed -= _scrubRate;
@@ -139,6 +139,14 @@ var Player = function() {
     }
   }
 
+  function checkForLanding() {
+    if (_air <= 0 && _drop <= 0) {
+      player.dispatchEvent('land');
+      _fallMomentum = _drop = 0;
+      _air = _verticalMomentum = 0;
+    }
+  }
+
   player.tuckDown = function(bool) {
     _tucking = bool;
     skier.tuck(bool);
@@ -167,14 +175,20 @@ var Player = function() {
     skier.squat(true);
   };
 
-  player.jump = function(thrust, drop) {
+  player.jump = function(thrust) {
     skier.squat(false);
     if (!player.airborne) { // prevents 'floating'
-      _drop = drop || 0;
-      _jumpAngle = _turnAngle;
+      _airAngle = _turnAngle;
       _verticalMomentum = thrust;
       player.dispatchEvent('jump');
     }
+  };
+
+  player.drop = function(distance) {
+    if (!player.airborne) {
+      _airAngle = _turnAngle;
+    }
+    _drop = distance;
   };
 
   player.crash = function() {
@@ -189,22 +203,13 @@ var Player = function() {
       _air += _verticalMomentum;
       player.scaleX = player.scaleY = (_air/100)+0.75;
       _verticalMomentum -= _gravity;
+      checkForLanding();
+    }
 
-      if (_drop > 0) {
-        _drop = 0;
-      }
-      
-      if (_air <= 0) {
-        player.dispatchEvent('land');
-        _air = _verticalMomentum = 0;
-      }
-    } else if (_drop > 0) {
+    if (_drop > 0) {
       _fallMomentum += _gravity;
       _drop -= _fallMomentum;
-      if (_drop <= 0) {
-        player.dispatchEvent('land');
-        _fallMomentum = _drop = 0;
-      }
+      checkForLanding();
     }
 
     calculateSpeed();

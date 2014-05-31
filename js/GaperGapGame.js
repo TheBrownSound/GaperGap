@@ -403,11 +403,11 @@ var Player = function() {
   var _verticalMomentum = 0;
   var _fallMomentum = 0;
   var _gravity = 0.2;
-  var _jumpAngle = 0;
+  var _airAngle = 0;
 
   function calculateSpeed() {
     // calculate potential speed momentum
-    var angle = (player.airborne) ? _jumpAngle : _turnAngle;
+    var angle = (player.airborne) ? _airAngle : _turnAngle;
     
     if (_scrubbing) {
       _speed -= _scrubRate;
@@ -486,6 +486,14 @@ var Player = function() {
     }
   }
 
+  function checkForLanding() {
+    if (_air <= 0 && _drop <= 0) {
+      player.dispatchEvent('land');
+      _fallMomentum = _drop = 0;
+      _air = _verticalMomentum = 0;
+    }
+  }
+
   player.tuckDown = function(bool) {
     _tucking = bool;
     skier.tuck(bool);
@@ -514,14 +522,20 @@ var Player = function() {
     skier.squat(true);
   };
 
-  player.jump = function(thrust, drop) {
+  player.jump = function(thrust) {
     skier.squat(false);
     if (!player.airborne) { // prevents 'floating'
-      _drop = drop || 0;
-      _jumpAngle = _turnAngle;
+      _airAngle = _turnAngle;
       _verticalMomentum = thrust;
       player.dispatchEvent('jump');
     }
+  };
+
+  player.drop = function(distance) {
+    if (!player.airborne) {
+      _airAngle = _turnAngle;
+    }
+    _drop = distance;
   };
 
   player.crash = function() {
@@ -536,22 +550,13 @@ var Player = function() {
       _air += _verticalMomentum;
       player.scaleX = player.scaleY = (_air/100)+0.75;
       _verticalMomentum -= _gravity;
+      checkForLanding();
+    }
 
-      if (_drop > 0) {
-        _drop = 0;
-      }
-      
-      if (_air <= 0) {
-        player.dispatchEvent('land');
-        _air = _verticalMomentum = 0;
-      }
-    } else if (_drop > 0) {
+    if (_drop > 0) {
       _fallMomentum += _gravity;
       _drop -= _fallMomentum;
-      if (_drop <= 0) {
-        player.dispatchEvent('land');
-        _fallMomentum = _drop = 0;
-      }
+      checkForLanding();
     }
 
     calculateSpeed();
@@ -678,12 +683,10 @@ var Hill = function(player){
         }
         */
         var features = sect.features;
-        if (!player.airborne) {
-          for (var feature in features) {
-            var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
-            if (hit) {
-              features[feature].hit(player, hit);
-            }
+        for (var feature in features) {
+          var hit = ndgmr.checkPixelCollision(player.hitArea, features[feature].hitArea, 0, true);
+          if (hit) {
+            features[feature].hit(player, hit);
           }
         }
       }
@@ -770,6 +773,7 @@ var Section = function(size, density, coords) {
 
       feature.x = GaperGap.utils.getRandomInt(0,size);
       feature.y = GaperGap.utils.getRandomInt(0,size);
+      
       _features.push(feature);
 
       if (feature.background) {
@@ -928,7 +932,8 @@ var Jump = function() {
   // kicker.regY = kicker.image.height;
 
   jump.hit = function(player) {
-    player.jump(4, kicker.image.height/2);
+    player.jump(5);
+    player.drop(kicker.image.height/2);
   };
   
   jump.__defineGetter__('hitArea', function(){
@@ -955,7 +960,7 @@ var Cliff = function() {
   cliff.hit = function(player, collision) {
     var coords = cliff.globalToLocal(collision.x, collision.y);
     console.log("Cliff:hit - ", coords.y);
-    player.jump(0, cliff.image.height-coords.y);
+    player.drop(cliff.image.height-coords.y);
   };
 
   cliff.__defineGetter__('hitArea', function(){

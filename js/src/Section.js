@@ -26,6 +26,7 @@ var Section = function(size, density, coords) {
 
       feature.x = GaperGap.utils.getRandomInt(0,size);
       feature.y = GaperGap.utils.getRandomInt(0,size);
+      
       _features.push(feature);
 
       if (feature.background) {

@@ -10,7 +10,7 @@ var Cliff = function() {
   cliff.hit = function(player, collision) {
     var coords = cliff.globalToLocal(collision.x, collision.y);
     console.log("Cliff:hit - ", coords.y);
-    player.jump(0, cliff.image.height-coords.y);
+    player.drop(cliff.image.height-coords.y);
   };
 
   cliff.__defineGetter__('hitArea', function(){
