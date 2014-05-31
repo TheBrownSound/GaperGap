@@ -25,7 +25,7 @@ var Tree = function() {
   tree.hit = function(player, collision) {
     var coords = trunk.globalToLocal(collision.x, collision.y);
     var impact = -(coords.x-(trunk.image.width/2));
-    if (Math.abs(impact) < 10) {
+    if (!player.airborne && Math.abs(impact) < 10) {
       player.crash();
     }
 

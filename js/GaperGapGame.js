@@ -487,10 +487,8 @@ var Player = function() {
   }
 
   function checkForLanding() {
-    if (_air <= 0 && _drop <= 0) {
+    if (_air === 0 && _drop === 0) {
       player.dispatchEvent('land');
-      _fallMomentum = _drop = 0;
-      _air = _verticalMomentum = 0;
     }
   }
 
@@ -550,18 +548,24 @@ var Player = function() {
       _air += _verticalMomentum;
       player.scaleX = player.scaleY = (_air/100)+0.75;
       _verticalMomentum -= _gravity;
-      checkForLanding();
+      if (_air <= 0) {
+        _air = _verticalMomentum = 0;
+        checkForLanding();
+      }
     }
 
     if (_drop > 0) {
       _fallMomentum += _gravity;
       _drop -= _fallMomentum;
-      checkForLanding();
+      if (_drop <= 0) {
+        _drop = _fallMomentum = 0;
+        checkForLanding();
+      }
     }
 
-    calculateSpeed();
-
     shadow.y = _air+_drop;
+
+    calculateSpeed();
   };
 
   player.__defineGetter__('speed', function(){
@@ -879,7 +883,7 @@ var Tree = function() {
   tree.hit = function(player, collision) {
     var coords = trunk.globalToLocal(collision.x, collision.y);
     var impact = -(coords.x-(trunk.image.width/2));
-    if (Math.abs(impact) < 10) {
+    if (!player.airborne && Math.abs(impact) < 10) {
       player.crash();
     }
 
