@@ -211,6 +211,7 @@ var Player = function() {
       }
       // check for landing
       if (_air === 0 && _drop === 0) {
+        console.log('land!')
         _verticalMomentum = 0;
         player.dispatchEvent('land');
       }

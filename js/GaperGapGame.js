@@ -558,6 +558,7 @@ var Player = function() {
       }
       // check for landing
       if (_air === 0 && _drop === 0) {
+        console.log('land!')
         _verticalMomentum = 0;
         player.dispatchEvent('land');
       }
@@ -592,6 +593,7 @@ var Hill = function(player){
   var _yPos = 0;
   var _width = 300;
   var _height = 300;
+  var _startOffset = 200;
 
   var section_size = 1000;
   var section_density = 6;
@@ -650,11 +652,19 @@ var Hill = function(player){
   hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
     snow.x = (snow.x+player.speed.x) % 400;
-    snow.y = (snow.y+player.speed.y) % 400;
+    snow.y = (snow.y+player.speed.y+_startOffset) % 400;
     hillParticles.x += player.speed.x;
     hillParticles.y += player.speed.y;
     _xPos += player.speed.x;
     _yPos += player.speed.y;
+
+    if (_startOffset > 0) {
+      hill.y = _startOffset;
+      _startOffset += player.speed.y;
+    } else if (_startOffset < 0 ) {
+      _startOffset = 0;
+      hill.y = 0;
+    }
     
     var currentSection = {
       col: Math.floor(-_xPos/section_size),
@@ -700,7 +710,6 @@ var Hill = function(player){
       sect.x = sect.location.x+_xPos;
       sect.y = sect.location.y+_yPos;
     }
-
   };
 
   function getVisibleSections() {
