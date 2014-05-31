@@ -83,6 +83,7 @@ var GaperGap = (function(){
     stage.snapToPixelEnabled = true;
 
     manifest = [
+      {src:"gapergap_logo.png", id:"logo"},
       {src:"gaper_gabe.png", id:"gabe"},
       {src:"bodies.png", id:"body-sprite"},
       {src:"pants.png", id:"pants-sprite"},

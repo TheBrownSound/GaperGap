@@ -32,9 +32,12 @@ var Utils = function() {
 var Game = function() {
   var game = new createjs.Container();
   var momentum = {x: 0, y: 0};
+  
   var player = new Player();
   var hill = new Hill(player);
   var score = new Score(player);
+
+  var _startOffset = 120;
 
   game.addChild(hill);
 
@@ -58,6 +61,15 @@ var Game = function() {
     player.update();
     hill.update();
     score.traveled = hill.distance;
+
+    // hill offset for game start
+    if (_startOffset > 0) {
+      hill.y = _startOffset;
+      _startOffset += player.speed.y;
+    } else if (_startOffset < 0 ) {
+      _startOffset = 0;
+      hill.y = 0;
+    }
   }
 
   function changeScale(perc) {
@@ -593,7 +605,6 @@ var Hill = function(player){
   var _yPos = 0;
   var _width = 300;
   var _height = 300;
-  var _startOffset = 200;
 
   var section_size = 1000;
   var section_density = 6;
@@ -605,10 +616,14 @@ var Hill = function(player){
   var hillParticles = new createjs.Container();
   var hillBackground = new createjs.Container();
 
+  var logo = new createjs.Bitmap(GaperGap.assets['logo']);
+  logo.regX = logo.image.width/2;
+  logo.regY = 340;
+
   // var hillDebugMarker = new createjs.Shape();
 
   // hillWrapper.addChild(hillDebugMarker);
-  hill.addChild(snow, hillBackground, hillParticles, player, hillForeground);
+  hill.addChild(snow, hillBackground, hillParticles, player, hillForeground, logo);
 
   player.addEventListener('jump', playerJumped);
   player.addEventListener('land', playerLanded);
@@ -652,19 +667,12 @@ var Hill = function(player){
   hill.update = function() {
     //document.getElementById('coords').innerHTML = ('x:'+hill.position.x+' - y:'+hill.position.y);
     snow.x = (snow.x+player.speed.x) % 400;
-    snow.y = (snow.y+player.speed.y+_startOffset) % 400;
-    hillParticles.x += player.speed.x;
-    hillParticles.y += player.speed.y;
+    snow.y = (snow.y+player.speed.y) % 400;
+    logo.x = hillParticles.x += player.speed.x;
+    logo.y = hillParticles.y += player.speed.y;
     _xPos += player.speed.x;
     _yPos += player.speed.y;
 
-    if (_startOffset > 0) {
-      hill.y = _startOffset;
-      _startOffset += player.speed.y;
-    } else if (_startOffset < 0 ) {
-      _startOffset = 0;
-      hill.y = 0;
-    }
     
     var currentSection = {
       col: Math.floor(-_xPos/section_size),
@@ -1060,6 +1068,7 @@ var GaperGap = (function(){
     stage.snapToPixelEnabled = true;
 
     manifest = [
+      {src:"gapergap_logo.png", id:"logo"},
       {src:"gaper_gabe.png", id:"gabe"},
       {src:"bodies.png", id:"body-sprite"},
       {src:"pants.png", id:"pants-sprite"},

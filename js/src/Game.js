@@ -1,9 +1,12 @@
 var Game = function() {
   var game = new createjs.Container();
   var momentum = {x: 0, y: 0};
+  
   var player = new Player();
   var hill = new Hill(player);
   var score = new Score(player);
+
+  var _startOffset = 120;
 
   game.addChild(hill);
 
@@ -27,6 +30,15 @@ var Game = function() {
     player.update();
     hill.update();
     score.traveled = hill.distance;
+
+    // hill offset for game start
+    if (_startOffset > 0) {
+      hill.y = _startOffset;
+      _startOffset += player.speed.y;
+    } else if (_startOffset < 0 ) {
+      _startOffset = 0;
+      hill.y = 0;
+    }
   }
 
   function changeScale(perc) {
