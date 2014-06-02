@@ -131,6 +131,12 @@ var Skier = function() {
   skier.__defineSetter__('angle', function(deg) {
     _angle = deg;
 
+    if (_angle < -90 || _angle > 90) {
+      torso.gotoAndStop(2);
+    } else {
+      torso.gotoAndStop(0);
+    }
+
     var crosser = (_crossed) ? 40:0;
     leftSki.rotation = _angle-crosser;
     rightSki.rotation = _angle+crosser;
