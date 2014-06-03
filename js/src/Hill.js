@@ -138,6 +138,14 @@ var Hill = function(player){
     return visibleKeys;
   }
 
+  hill.reset = function() {
+    for (var section in sections) {
+      removeSection(sections[section]);
+      delete sections[section];
+    }
+    _xPos = _yPos = 0;
+  };
+
   hill.__defineSetter__('height', function(value){
     _height = value;
     return _height;

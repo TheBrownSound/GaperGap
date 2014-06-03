@@ -205,6 +205,12 @@ var Player = function() {
     player.dispatchEvent('crash');
   };
 
+  player.reset = function() {
+    _speed = _turnMomentum = _axisSpeed.x = _axisSpeed.y = 0;
+    _direction = null;
+    _turnAngle = -90;
+  };
+
   player.update = function() {
     var turnAngle = calculateTurnAngle();
     skier.angle = turnAngle;

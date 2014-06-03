@@ -38,7 +38,6 @@ var Game = function() {
   var score = new Score(player);
 
   var _crashed = false;
-
   var _startOffset = 120;
 
   game.addChild(hill);
@@ -85,12 +84,24 @@ var Game = function() {
     }
   }
 
+  game.reset = function() {
+    _startOffset = 120;
+    _crashed = false;
+    player.reset();
+    hill.reset();
+    score.reset();
+  };
+
   player.addEventListener('crash', function(event) {
     // show reset
     _crashed = true;
   });
 
   GaperGap.addEventListener('onKeyDown', function(event) {
+    if (_crashed) {
+      game.reset();
+      return;
+    }
     switch(event.key) {
       case 32: //Space
         player.squat();
@@ -153,6 +164,11 @@ var Score = function(player){
     _total += amount;
     debugText.innerHTML = "Score: "+_total;
   }
+
+  score.reset = function() {
+    addToScore(0);
+    _total = 0;
+  };
 
   score.__defineSetter__('traveled', function(distance) {
     var difference = distance - _traveled;
@@ -607,6 +623,12 @@ var Player = function() {
     player.dispatchEvent('crash');
   };
 
+  player.reset = function() {
+    _speed = _turnMomentum = _axisSpeed.x = _axisSpeed.y = 0;
+    _direction = null;
+    _turnAngle = -90;
+  };
+
   player.update = function() {
     var turnAngle = calculateTurnAngle();
     skier.angle = turnAngle;
@@ -800,6 +822,14 @@ var Hill = function(player){
 
     return visibleKeys;
   }
+
+  hill.reset = function() {
+    for (var section in sections) {
+      removeSection(sections[section]);
+      delete sections[section];
+    }
+    _xPos = _yPos = 0;
+  };
 
   hill.__defineSetter__('height', function(value){
     _height = value;

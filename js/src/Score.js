@@ -10,6 +10,11 @@ var Score = function(player){
     debugText.innerHTML = "Score: "+_total;
   }
 
+  score.reset = function() {
+    addToScore(0);
+    _total = 0;
+  };
+
   score.__defineSetter__('traveled', function(distance) {
     var difference = distance - _traveled;
     var currentSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
