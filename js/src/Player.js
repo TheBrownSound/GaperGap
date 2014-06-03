@@ -16,7 +16,7 @@ var Player = function() {
   var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
   hitBox.regX = hitBox.image.width/2;
   hitBox.regY = hitBox.image.height/2;
-  hitBox.alpha = 0;
+  //hitBox.alpha = 0;
 
   player.scaleX = player.scaleY = 0.75;
 
@@ -55,26 +55,39 @@ var Player = function() {
   var _drop = 0; // speed accelerator
   var _verticalMomentum = 0;
   var _gravity = 0.2;
-  var _airAngle = 0;
+  var _airAngle = false;
+  var _airSpeed = 0;
 
   function calculateSpeed() {
     // calculate potential speed momentum
     var angle = (player.airborne) ? _airAngle : _turnAngle;
+
+    if (player.airborne) {
+      _speed = _airSpeed;
+    } else if (_airAngle !== false) {
+      // If going the reverse direction, swap the speed to match for landing
+      if ( (_airSpeed > 0 && Math.abs(angle) > 90) || (_airSpeed < 0 && Math.abs(angle) < 90) ) {
+        _speed = -_speed;
+      }
+      // just landed, reset the air angle
+      _airAngle = false;
+      _airSpeed = 0;
+    }
     
     if (_scrubbing) {
       _speed -= _scrubRate;
     } else {
-      var accel = 85-(Math.abs(angle));
-      accel = Math.round( accel * 10) / 1000; // decreases number/decimal for animation
+      var accel = 90-(Math.abs(angle));
+      accel = Math.round(accel * 10) / 1000; // decreases number/decimal for animation
+
       _speed += accel;
+      
       var max = _maxSpeed+calculateTuckModifier();
       if (_speed > max) {
         _speed = max;
+      } else if (_speed < -max) {
+        _speed = -max;
       }
-    }
-
-    if (_speed < 0) {
-      _speed = 0;
     }
 
     _axisSpeed = {
@@ -173,6 +186,7 @@ var Player = function() {
     skier.squat(false);
     if (!player.airborne) { // prevents 'floating'
       _airAngle = _turnAngle;
+      _airSpeed = _speed;
       _verticalMomentum = thrust;
       player.dispatchEvent('jump');
     }
@@ -181,6 +195,7 @@ var Player = function() {
   player.drop = function(distance) {
     if (!player.airborne) {
       _airAngle = _turnAngle;
+      _airSpeed = _speed;
     }
     _drop = distance;
   };
@@ -213,7 +228,7 @@ var Player = function() {
       }
       // check for landing
       if (_air === 0 && _drop === 0) {
-        console.log('land!')
+        console.log('land!');
         _verticalMomentum = 0;
         player.dispatchEvent('land');
       }
