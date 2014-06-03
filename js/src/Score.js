@@ -3,7 +3,8 @@ var Score = function(player){
   var _total = 0;
 
   var _traveled = 0;
-  var debugText = document.getElementById('score');
+  var debugText = $('#score');
+  debugText.addClass('show');
 
   function addToScore(amount) {
     _total += amount;

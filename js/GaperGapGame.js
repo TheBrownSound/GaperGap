@@ -82,7 +82,7 @@ var Game = function() {
       createjs.Tween.get(hill, {override:true}).to({
         scaleX:perc,
         scaleY:perc
-      }, duration, createjs.Ease.sineOut);
+      }, 4000, createjs.Ease.sineOut);
     }
   }
 
@@ -130,7 +130,7 @@ var Game = function() {
     }
     switch(event.key) {
       case 32: //Space
-        player.jump(2);
+        player.jump();
         break;
       case 37: //Left
       case 39: //Right
@@ -162,7 +162,8 @@ var Score = function(player){
   var _total = 0;
 
   var _traveled = 0;
-  var debugText = document.getElementById('score');
+  var debugText = $('#score');
+  debugText.addClass('show');
 
   function addToScore(amount) {
     _total += amount;
@@ -367,7 +368,7 @@ var Skier = function() {
     leftSki.rotation = _angle-crosser;
     rightSki.rotation = _angle+crosser;
 
-    var lift = (_angle < -90 || _angle > 90) ? 10 : 0;
+    var lift = (_angle < -90 || _angle > 90) ? 2 : 0;
 
     var radians = _angle*Math.PI/180;
     radians = (Math.abs(_angle) > 90) ? radians : radians*0.7; // allows for skier leg offset
@@ -485,6 +486,7 @@ var Player = function() {
   var _gravity = 0.2;
   var _airAngle = false;
   var _airSpeed = 0;
+  var _squatting = false;
 
   function calculateSpeed() {
     // calculate potential speed momentum
@@ -607,11 +609,18 @@ var Player = function() {
   };
 
   player.squat = function() {
+    _squatting = true;
     skier.squat(true);
   };
 
   player.jump = function(thrust) {
-    skier.squat(false);
+    thrust = thrust || 0;
+    if (_squatting) {
+      thrust += 2;
+      _squatting = false;
+      skier.squat(false);
+    }
+
     if (!player.airborne) { // prevents 'floating'
       _airAngle = _turnAngle;
       _airSpeed = _speed;
@@ -636,6 +645,7 @@ var Player = function() {
   player.reset = function() {
     _speed = _turnMomentum = _axisSpeed.x = _axisSpeed.y = 0;
     _direction = null;
+    _squatting = false;
     skier.reset(-90);
     _turnAngle = -90;
   };

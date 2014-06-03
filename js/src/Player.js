@@ -57,6 +57,7 @@ var Player = function() {
   var _gravity = 0.2;
   var _airAngle = false;
   var _airSpeed = 0;
+  var _squatting = false;
 
   function calculateSpeed() {
     // calculate potential speed momentum
@@ -179,11 +180,18 @@ var Player = function() {
   };
 
   player.squat = function() {
+    _squatting = true;
     skier.squat(true);
   };
 
   player.jump = function(thrust) {
-    skier.squat(false);
+    thrust = thrust || 0;
+    if (_squatting) {
+      thrust += 2;
+      _squatting = false;
+      skier.squat(false);
+    }
+
     if (!player.airborne) { // prevents 'floating'
       _airAngle = _turnAngle;
       _airSpeed = _speed;
@@ -208,6 +216,7 @@ var Player = function() {
   player.reset = function() {
     _speed = _turnMomentum = _axisSpeed.x = _axisSpeed.y = 0;
     _direction = null;
+    _squatting = false;
     skier.reset(-90);
     _turnAngle = -90;
   };

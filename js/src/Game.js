@@ -51,7 +51,7 @@ var Game = function() {
       createjs.Tween.get(hill, {override:true}).to({
         scaleX:perc,
         scaleY:perc
-      }, duration, createjs.Ease.sineOut);
+      }, 4000, createjs.Ease.sineOut);
     }
   }
 
@@ -99,7 +99,7 @@ var Game = function() {
     }
     switch(event.key) {
       case 32: //Space
-        player.jump(2);
+        player.jump();
         break;
       case 37: //Left
       case 39: //Right

@@ -160,7 +160,7 @@ var Skier = function() {
     leftSki.rotation = _angle-crosser;
     rightSki.rotation = _angle+crosser;
 
-    var lift = (_angle < -90 || _angle > 90) ? 10 : 0;
+    var lift = (_angle < -90 || _angle > 90) ? 2 : 0;
 
     var radians = _angle*Math.PI/180;
     radians = (Math.abs(_angle) > 90) ? radians : radians*0.7; // allows for skier leg offset
