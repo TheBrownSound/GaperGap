@@ -110,13 +110,16 @@ var Player = function() {
       turnSpeed = 2;
     }
     _turnAngle += (_turnMomentum/_acceleration)*turnSpeed;
+    
+    /*
     if (!player.airborne) {
       if (_turnAngle > _maxTurnAngle) {
         _turnAngle = _maxTurnAngle;
       } else if (_turnAngle < -_maxTurnAngle) {
         _turnAngle = -_maxTurnAngle;
       }
-    } else if (_turnAngle < -180) {
+    } else*/
+    if (_turnAngle < -180) {
       _turnAngle = 180; // basically for 360s
     } else if (_turnAngle > 180) {
       _turnAngle = -180; // basically for 360s
