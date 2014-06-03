@@ -73,9 +73,6 @@ var Skier = function() {
   
   leftSki.gotoAndStop(2);
   rightSki.gotoAndStop(2);
-  
-  // leftSki.x = -10;
-  // rightSki.x = 10;
 
   body.addChild(torso, head);
   skier.addChild(leftSki, rightSki, pants, body);

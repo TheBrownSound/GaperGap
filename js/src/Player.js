@@ -202,6 +202,7 @@ var Player = function() {
 
   player.crash = function() {
     _speed = 0;
+    player.dispatchEvent('crash');
   };
 
   player.update = function() {

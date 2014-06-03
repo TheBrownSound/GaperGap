@@ -6,6 +6,8 @@ var Game = function() {
   var hill = new Hill(player);
   var score = new Score(player);
 
+  var _crashed = false;
+
   var _startOffset = 120;
 
   game.addChild(hill);
@@ -27,9 +29,11 @@ var Game = function() {
   }
 
   function updateGame() {
-    player.update();
-    hill.update();
-    score.traveled = hill.distance;
+    if (!_crashed) {
+      player.update();
+      hill.update();
+      score.traveled = hill.distance;
+    }
 
     // hill offset for game start
     if (_startOffset > 0) {
@@ -49,6 +53,11 @@ var Game = function() {
       }, 4000, createjs.Ease.sineOut);
     }
   }
+
+  player.addEventListener('crash', function(event) {
+    // show reset
+    _crashed = true;
+  });
 
   GaperGap.addEventListener('onKeyDown', function(event) {
     switch(event.key) {

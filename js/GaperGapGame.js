@@ -37,6 +37,8 @@ var Game = function() {
   var hill = new Hill(player);
   var score = new Score(player);
 
+  var _crashed = false;
+
   var _startOffset = 120;
 
   game.addChild(hill);
@@ -58,9 +60,11 @@ var Game = function() {
   }
 
   function updateGame() {
-    player.update();
-    hill.update();
-    score.traveled = hill.distance;
+    if (!_crashed) {
+      player.update();
+      hill.update();
+      score.traveled = hill.distance;
+    }
 
     // hill offset for game start
     if (_startOffset > 0) {
@@ -80,6 +84,11 @@ var Game = function() {
       }, 4000, createjs.Ease.sineOut);
     }
   }
+
+  player.addEventListener('crash', function(event) {
+    // show reset
+    _crashed = true;
+  });
 
   GaperGap.addEventListener('onKeyDown', function(event) {
     switch(event.key) {
@@ -251,9 +260,6 @@ var Skier = function() {
   
   leftSki.gotoAndStop(2);
   rightSki.gotoAndStop(2);
-  
-  // leftSki.x = -10;
-  // rightSki.x = 10;
 
   body.addChild(torso, head);
   skier.addChild(leftSki, rightSki, pants, body);
@@ -598,6 +604,7 @@ var Player = function() {
 
   player.crash = function() {
     _speed = 0;
+    player.dispatchEvent('crash');
   };
 
   player.update = function() {
@@ -941,6 +948,11 @@ var Tree = function() {
   var leaves = new createjs.Bitmap(
     GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,3)]
   );
+
+  var hitDebug = new createjs.Shape();
+  hitDebug.graphics.beginFill('#BADA55');
+  hitDebug.graphics.drawCircle(0,0,1);
+  hitDebug.graphics.endFill();
   
   branches.addChild(leaves);
 
@@ -953,16 +965,16 @@ var Tree = function() {
   leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
 
   tree.hit = function(player, collision) {
-    var coords = trunk.globalToLocal(collision.x, collision.y);
-    var impact = -(coords.x-(trunk.image.width/2));
-    if (!player.airborne && Math.abs(impact) < 10) {
+    if (!player.airborne && collision.width > 25) {
       player.crash();
     }
 
     if (!hasBeenHit) {
+      var coords = trunk.globalToLocal(collision.x, collision.y);
+      var impact = (coords.x-(trunk.image.width/2));
       createjs.Tween.get(branches, {override:false})
-        .to({rotation:impact/2}, 100, createjs.Ease.circIn)
-        .to({rotation:impact/4}, 3000, createjs.Ease.elasticOut);
+        .to({rotation:-impact/2}, 100, createjs.Ease.circIn)
+        .to({rotation:-impact/4}, 3000, createjs.Ease.elasticOut);
       hasBeenHit = true;
     }
   };

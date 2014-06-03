@@ -11,6 +11,11 @@ var Tree = function() {
   var leaves = new createjs.Bitmap(
     GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,3)]
   );
+
+  var hitDebug = new createjs.Shape();
+  hitDebug.graphics.beginFill('#BADA55');
+  hitDebug.graphics.drawCircle(0,0,1);
+  hitDebug.graphics.endFill();
   
   branches.addChild(leaves);
 
@@ -23,16 +28,16 @@ var Tree = function() {
   leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
 
   tree.hit = function(player, collision) {
-    var coords = trunk.globalToLocal(collision.x, collision.y);
-    var impact = -(coords.x-(trunk.image.width/2));
-    if (!player.airborne && Math.abs(impact) < 10) {
+    if (!player.airborne && collision.width > 25) {
       player.crash();
     }
 
     if (!hasBeenHit) {
+      var coords = trunk.globalToLocal(collision.x, collision.y);
+      var impact = (coords.x-(trunk.image.width/2));
       createjs.Tween.get(branches, {override:false})
-        .to({rotation:impact/2}, 100, createjs.Ease.circIn)
-        .to({rotation:impact/4}, 3000, createjs.Ease.elasticOut);
+        .to({rotation:-impact/2}, 100, createjs.Ease.circIn)
+        .to({rotation:-impact/4}, 3000, createjs.Ease.elasticOut);
       hasBeenHit = true;
     }
   };
