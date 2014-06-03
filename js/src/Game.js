@@ -31,7 +31,7 @@ var Game = function() {
     if (!_crashed) {
       player.update();
       hill.update();
-      score.traveled = hill.distance;
+      score.update();
     }
 
     // hill offset for game start

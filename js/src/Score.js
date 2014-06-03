@@ -2,7 +2,10 @@ var Score = function(player, elementId){
   var score = {};
   var _total = 0;
 
-  var _traveled = 0;
+  var _airtime = 0;
+  var _speedtime = 0;
+  var _speedScore = 0;
+
   var scoreBox = $('#score');
   scoreBox.addClass('show');
 
@@ -12,19 +15,28 @@ var Score = function(player, elementId){
   }
 
   score.reset = function() {
-    addToScore(0);
     _total = 0;
+    addToScore(0);
   };
 
-  score.__defineSetter__('traveled', function(distance) {
-    var difference = distance - _traveled;
-    var currentSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
-    _traveled = distance;
-    var travelScore = Math.round(difference*currentSpeed/10);
+  score.update = function() {
+    if (player.airborne) {
+      _airtime++;
+    } else if (_airtime > 0) {
+      addToScore(_airtime);
+      _airtime = 0;
+    }
 
-    addToScore(travelScore);
-    return _traveled;
-  });
+    var totalSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
+    if (totalSpeed > 10) {
+      _speedtime++;
+      _speedScore = _speedtime*_speedtime;
+    } else if (_speedtime > 0 ) {
+      _speedtime = 0;
+      addToScore(_speedScore);
+      _speedScore = 0;
+    }
+  };
 
   return score;
 };
