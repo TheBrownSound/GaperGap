@@ -3,6 +3,7 @@ var Tree = function() {
   var hasBeenHit = false;
 
   var tree = {};
+  tree.type = 'tree';
   
   var branches = new createjs.Container();
   var leaves = new createjs.Bitmap(
@@ -32,6 +33,8 @@ var Tree = function() {
   tree.hit = function(player, collision) {
     if (!player.airborne && collision.width > 25) {
       player.crash();
+    } else {
+      player.hit(tree);
     }
 
     if (!hasBeenHit) {

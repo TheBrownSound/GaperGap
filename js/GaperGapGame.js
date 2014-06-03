@@ -168,10 +168,16 @@ var Score = function(player, elementId){
   var scoreBox = $('#score');
   scoreBox.addClass('show');
 
-  function addToScore(amount) {
+  function addToScore(amount, slug) {
     _total += amount;
     scoreBox.html(_total);
   }
+
+  player.addEventListener('hit', function(event) {
+    if (event.target.type == "tree") {
+      addToScore(50, "Treehugger");
+    }
+  });
 
   score.reset = function() {
     _total = 0;
@@ -654,6 +660,10 @@ var Player = function() {
     player.dispatchEvent('crash');
   };
 
+  player.hit = function(feature) {
+    player.dispatchEvent('hit', feature);
+  };
+
   player.reset = function() {
     _speed = _turnMomentum = _axisSpeed.x = _axisSpeed.y = 0;
     _direction = null;
@@ -1004,6 +1014,7 @@ var Tree = function() {
   var hasBeenHit = false;
 
   var tree = {};
+  tree.type = 'tree';
   
   var branches = new createjs.Container();
   var leaves = new createjs.Bitmap(
@@ -1033,6 +1044,8 @@ var Tree = function() {
   tree.hit = function(player, collision) {
     if (!player.airborne && collision.width > 25) {
       player.crash();
+    } else {
+      player.hit(tree);
     }
 
     if (!hasBeenHit) {

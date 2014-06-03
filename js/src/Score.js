@@ -9,10 +9,16 @@ var Score = function(player, elementId){
   var scoreBox = $('#score');
   scoreBox.addClass('show');
 
-  function addToScore(amount) {
+  function addToScore(amount, slug) {
     _total += amount;
     scoreBox.html(_total);
   }
+
+  player.addEventListener('hit', function(event) {
+    if (event.target.type == "tree") {
+      addToScore(50, "Treehugger");
+    }
+  });
 
   score.reset = function() {
     _total = 0;
