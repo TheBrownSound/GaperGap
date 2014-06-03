@@ -84,7 +84,7 @@ var GaperGap = (function(){
 
     manifest = [
       {src:"gapergap_logo.png", id:"logo"},
-      {src:"gaper_gabe.png", id:"gabe"},
+      {src:"gaper_sprite.png", id:"gabe"},
       {src:"bodies.png", id:"body-sprite"},
       {src:"pants.png", id:"pants-sprite"},
       {src:"ski_sprite.png", id:"ski-sprite"},

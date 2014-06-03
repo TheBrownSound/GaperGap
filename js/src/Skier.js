@@ -1,6 +1,7 @@
 var Skier = function() {
   var _angle = 0;
   var _crossed = false;
+  var _tucked = false;
   var skier = new createjs.Container();
 
   var _bodyBase = {
@@ -18,10 +19,18 @@ var Skier = function() {
   body.y = _bodyBase.y;
 
   // Head
-  var head = new createjs.Bitmap(GaperGap.assets['gabe']);
-  head.regX = head.image.width/2;
-  head.regY = head.image.height*0.7;
+  var headData = {
+    images: [GaperGap.assets['gabe']],
+    frames: {width:100, height:114}
+  };
+
+  var headSprite = new createjs.SpriteSheet(headData);
+  var head = new createjs.Sprite(headSprite);
+
+  head.regX = headData.frames.width/2;
+  head.regY = headData.frames.height*0.7;
   head.y = _headBase.y;
+  head.gotoAndStop(0);
 
   // Torso Sprite
   var torsoData = {
@@ -109,7 +118,8 @@ var Skier = function() {
   };
 
   skier.tuck = function(bool) {
-    if (bool) {
+    _tucked = bool;
+    if (_tucked) {
       body.y = _bodyBase.y+4;
       head.y = _headBase.y+2;
       torso.gotoAndStop(1);
@@ -133,8 +143,14 @@ var Skier = function() {
 
     if (_angle < -90 || _angle > 90) {
       torso.gotoAndStop(2);
+      head.gotoAndStop(1);
     } else {
-      torso.gotoAndStop(0);
+      if (_tucked) {
+        torso.gotoAndStop(1);
+      } else {
+        torso.gotoAndStop(0);
+      }
+      head.gotoAndStop(0);
     }
 
     var crosser = (_crossed) ? 40:0;
