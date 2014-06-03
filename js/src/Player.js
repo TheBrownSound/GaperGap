@@ -208,6 +208,7 @@ var Player = function() {
   player.reset = function() {
     _speed = _turnMomentum = _axisSpeed.x = _axisSpeed.y = 0;
     _direction = null;
+    skier.reset(-90);
     _turnAngle = -90;
   };
 

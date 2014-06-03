@@ -143,7 +143,8 @@ var Hill = function(player){
       removeSection(sections[section]);
       delete sections[section];
     }
-    _xPos = _yPos = 0;
+    logo.x = hillParticles.x = logo.y = hillParticles.y =_xPos = _yPos = 0;
+    hill.update();
   };
 
   hill.__defineSetter__('height', function(value){

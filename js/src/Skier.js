@@ -131,6 +131,12 @@ var Skier = function() {
     //_crossed = bool;
   };
 
+  skier.reset = function(deg) {
+    skier.squat(false);
+    skier.tuck(false);
+    skier.angle = deg;
+  };
+
   skier.__defineGetter__('crossed', function(){
     return _crossed;
   });

@@ -75,21 +75,23 @@ var Game = function() {
     }
   }
 
-  function changeScale(perc) {
-    if (perc != hill.scaleX) {
+  function changeScale(perc, instant) {
+    if (instant) {
+      hill.scaleX = hill.scaleY = perc;
+    } else if (perc != hill.scaleX) {
       createjs.Tween.get(hill, {override:true}).to({
         scaleX:perc,
         scaleY:perc
-      }, 4000, createjs.Ease.sineOut);
+      }, duration, createjs.Ease.sineOut);
     }
   }
 
   game.reset = function() {
     _startOffset = 120;
-    _crashed = false;
     player.reset();
     hill.reset();
     score.reset();
+    changeScale(1, true);
   };
 
   player.addEventListener('crash', function(event) {
@@ -98,10 +100,7 @@ var Game = function() {
   });
 
   GaperGap.addEventListener('onKeyDown', function(event) {
-    if (_crashed) {
-      game.reset();
-      return;
-    }
+    if (_crashed) return;
     switch(event.key) {
       case 32: //Space
         player.squat();
@@ -124,6 +123,11 @@ var Game = function() {
   });
 
   GaperGap.addEventListener('onKeyUp', function(event) {
+    if (_crashed) {
+      game.reset();
+      _crashed = false;
+      return;
+    }
     switch(event.key) {
       case 32: //Space
         player.jump(2);
@@ -332,6 +336,12 @@ var Skier = function() {
 
   skier.cross = function(bool) {
     //_crossed = bool;
+  };
+
+  skier.reset = function(deg) {
+    skier.squat(false);
+    skier.tuck(false);
+    skier.angle = deg;
   };
 
   skier.__defineGetter__('crossed', function(){
@@ -626,6 +636,7 @@ var Player = function() {
   player.reset = function() {
     _speed = _turnMomentum = _axisSpeed.x = _axisSpeed.y = 0;
     _direction = null;
+    skier.reset(-90);
     _turnAngle = -90;
   };
 
@@ -828,7 +839,8 @@ var Hill = function(player){
       removeSection(sections[section]);
       delete sections[section];
     }
-    _xPos = _yPos = 0;
+    logo.x = hillParticles.x = logo.y = hillParticles.y =_xPos = _yPos = 0;
+    hill.update();
   };
 
   hill.__defineSetter__('height', function(value){
