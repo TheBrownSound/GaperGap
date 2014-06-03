@@ -942,27 +942,29 @@ var Tree = function() {
   var tree = {};
   
   var branches = new createjs.Container();
-  var trunk = new createjs.Bitmap(
-    GaperGap.assets['trunk-'+GaperGap.utils.getRandomInt(1,2)]
-  );
   var leaves = new createjs.Bitmap(
     GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,3)]
   );
 
-  var hitDebug = new createjs.Shape();
-  hitDebug.graphics.beginFill('#BADA55');
-  hitDebug.graphics.drawCircle(0,0,1);
-  hitDebug.graphics.endFill();
+  var base = new createjs.Container();
+  var trunk = new createjs.Bitmap(
+    GaperGap.assets['trunk-'+GaperGap.utils.getRandomInt(1,2)]
+  );
+  var hitBox = new createjs.Bitmap(GaperGap.assets['trunk-hitbox']);
+  //hitBox.alpha = 0;
   
+  base.addChild(hitBox, trunk);
   branches.addChild(leaves);
 
+  hitBox.regX = hitBox.image.width/2;
+  hitBox.regY = hitBox.image.height;
   trunk.regX = trunk.image.width/2;
   trunk.regY = trunk.image.height;
   branches.regY = trunk.image.height;
   leaves.regX = leaves.image.width/2;
   leaves.regY = leaves.image.height*0.8;
 
-  leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
+  //leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
 
   tree.hit = function(player, collision) {
     if (!player.airborne && collision.width > 25) {
@@ -980,7 +982,7 @@ var Tree = function() {
   };
 
   tree.__defineGetter__('hitArea', function(){
-    return trunk;
+    return hitBox;
   });
 
   tree.__defineGetter__('foreground', function(){
@@ -988,11 +990,11 @@ var Tree = function() {
   });
 
   tree.__defineGetter__('background', function(){
-    return trunk;
+    return base;
   });
 
   tree.__defineSetter__('x', function(val){
-    _x = trunk.x = branches.x = val;
+    _x = base.x = branches.x = val;
     return _x;
   });
 
@@ -1001,7 +1003,7 @@ var Tree = function() {
   });
 
   tree.__defineSetter__('y', function(val){
-    _y = trunk.y = val;
+    _y = base.y = val;
     branches.y = val-20;
     return _y;
   });
@@ -1141,6 +1143,7 @@ var GaperGap = (function(){
       {src:"pants.png", id:"pants-sprite"},
       {src:"ski_sprite.png", id:"ski-sprite"},
       {src:"hitbox.png", id:"player-hitbox"},
+      {src:"trunk_hit.png", id:"trunk-hitbox"},
       {src:"trunk_1.png", id:"trunk-1"},
       {src:"trunk_2.png", id:"trunk-2"},
       {src:"tree_1.png", id:"tree-1"},
