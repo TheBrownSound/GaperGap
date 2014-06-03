@@ -16,7 +16,7 @@ var Player = function() {
   var hitBox = new createjs.Bitmap(GaperGap.assets['player-hitbox']);
   hitBox.regX = hitBox.image.width/2;
   hitBox.regY = hitBox.image.height/2;
-  //hitBox.alpha = 0;
+  hitBox.alpha = 0;
 
   player.scaleX = player.scaleY = 0.75;
 
@@ -65,6 +65,7 @@ var Player = function() {
     if (player.airborne) {
       _speed = _airSpeed;
     } else if (_airAngle !== false) {
+      //TODO Might want to handle angle difference to adjust landing speed
       // If going the reverse direction, swap the speed to match for landing
       if ( (_airSpeed > 0 && Math.abs(angle) > 90) || (_airSpeed < 0 && Math.abs(angle) < 90) ) {
         _speed = -_speed;
@@ -79,15 +80,14 @@ var Player = function() {
     } else {
       var accel = 90-(Math.abs(angle));
       accel = Math.round(accel * 10) / 1000; // decreases number/decimal for animation
-
       _speed += accel;
-      
-      var max = _maxSpeed+calculateTuckModifier();
-      if (_speed > max) {
-        _speed = max;
-      } else if (_speed < -max) {
-        _speed = -max;
-      }
+    }
+
+    var max = _maxSpeed+calculateTuckModifier();
+    if (_speed > max) {
+      _speed = max;
+    } else if (_speed < -max) {
+      _speed = -max;
     }
 
     _axisSpeed = {

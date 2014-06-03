@@ -14,7 +14,7 @@ var Tree = function() {
     GaperGap.assets['trunk-'+GaperGap.utils.getRandomInt(1,2)]
   );
   var hitBox = new createjs.Bitmap(GaperGap.assets['trunk-hitbox']);
-  //hitBox.alpha = 0;
+  hitBox.alpha = 0;
   
   base.addChild(hitBox, trunk);
   branches.addChild(leaves);
