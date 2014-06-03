@@ -6,8 +6,9 @@ var Score = function(player, elementId){
   var _speedtime = 0;
   var _speedScore = 0;
 
-  var scoreBox = $('#score');
-  scoreBox.addClass('show');
+  var scoreElement = $('#score');
+  var scoreBox = $('#score .box');
+  scoreElement.addClass('show');
 
   function addToScore(amount, slug) {
     _total += amount;

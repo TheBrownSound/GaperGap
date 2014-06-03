@@ -33,11 +33,10 @@ var Tree = function() {
   tree.hit = function(player, collision) {
     if (!player.airborne && collision.width > 25) {
       player.crash();
-    } else {
-      player.hit(tree);
     }
 
     if (!hasBeenHit) {
+      player.hit(tree);
       var coords = trunk.globalToLocal(collision.x, collision.y);
       var impact = (coords.x-(trunk.image.width/2));
       createjs.Tween.get(branches, {override:false})

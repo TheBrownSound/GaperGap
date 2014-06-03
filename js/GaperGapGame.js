@@ -165,8 +165,9 @@ var Score = function(player, elementId){
   var _speedtime = 0;
   var _speedScore = 0;
 
-  var scoreBox = $('#score');
-  scoreBox.addClass('show');
+  var scoreElement = $('#score');
+  var scoreBox = $('#score .box');
+  scoreElement.addClass('show');
 
   function addToScore(amount, slug) {
     _total += amount;
@@ -1044,11 +1045,10 @@ var Tree = function() {
   tree.hit = function(player, collision) {
     if (!player.airborne && collision.width > 25) {
       player.crash();
-    } else {
-      player.hit(tree);
     }
 
     if (!hasBeenHit) {
+      player.hit(tree);
       var coords = trunk.globalToLocal(collision.x, collision.y);
       var impact = (coords.x-(trunk.image.width/2));
       createjs.Tween.get(branches, {override:false})
