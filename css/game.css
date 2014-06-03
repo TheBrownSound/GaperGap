@@ -78,3 +78,22 @@ body {
   transform: translateY(60px);
 }
 
+#touch-controls {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.touch #touch-controls {
+  display: block;
+}
+
+#touch-controls span {
+  margin: 0 10px;
+}
+
+#touch-controls .right-turn {
+  float: right;
+}
+

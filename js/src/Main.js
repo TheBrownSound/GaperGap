@@ -118,6 +118,24 @@ var GaperGap = (function(){
 
   $(document).ready(function(){
     console.log('DOCUMENT READY');
+    
+    if ('ontouchstart' in window) { // mobile stuff
+      $(body).addClass('touch');
+      
+      $('left-turn').bind('touchstart', function(){
+        gapergap.dispatchEvent({type:'onKeyDown', key:"touch-left"});
+      }).bind('touchend', function(){
+        gapergap.dispatchEvent({type:'onKeyUp', key:"touch-left"});
+      });
+
+      $('right-turn').bind('touchstart', function(){
+        gapergap.dispatchEvent({type:'onKeyDown', key:"touch-right"});
+      }).bind('touchend', function(){
+        gapergap.dispatchEvent({type:'onKeyUp', key:"touch-right"});
+      });
+
+    }
+
     window.onresize = sizeCanvas;
     window.onkeydown = onKeyDown;
     window.onkeyup = onKeyUp;

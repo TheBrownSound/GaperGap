@@ -74,12 +74,14 @@ var Game = function() {
       case 32: //Space
         player.squat();
         break;
+      case 'touch-left':
       case 37: //Left
         player.turnRight();
         break;
       case 38: //Up
         player.tuckDown(true);
         break;
+      case 'touch-right':
       case 39: //Right
         player.turnLeft();
         break;
@@ -101,6 +103,8 @@ var Game = function() {
       case 32: //Space
         player.jump();
         break;
+      case 'touch-left':
+      case 'touch-right':
       case 37: //Left
       case 39: //Right
         player.stopTurning();
