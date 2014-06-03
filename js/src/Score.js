@@ -1,14 +1,14 @@
-var Score = function(player){
+var Score = function(player, elementId){
   var score = {};
   var _total = 0;
 
   var _traveled = 0;
-  var debugText = $('#score');
-  debugText.addClass('show');
+  var scoreBox = $('#score');
+  scoreBox.addClass('show');
 
   function addToScore(amount) {
     _total += amount;
-    debugText.innerHTML = "Score: "+_total;
+    scoreBox.html(_total);
   }
 
   score.reset = function() {
