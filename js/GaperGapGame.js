@@ -167,7 +167,8 @@ var Score = function(player, elementId){
 
   var _airtime = 0;
   var _speedtime = 0;
-  var _speedScore = 0;
+
+  var speedSlug;
 
   var scoreElement = $('#score');
   var scoreBox = $('#score .box');
@@ -199,16 +200,44 @@ var Score = function(player, elementId){
 
     var totalSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
     if (totalSpeed > 10) {
-      _speedtime++;
-      _speedScore = _speedtime*_speedtime;
-    } else if (_speedtime > 0 ) {
-      _speedtime = 0;
-      addToScore(_speedScore);
-      _speedScore = 0;
+      if (!speedSlug) {
+        speedSlug = new scoreSlug('Speedy McSpeederson');
+      } else {
+        speedSlug.addScore(1);
+      }
+    } else if (speedSlug) {
+      speedSlug.done();
+      addToScore(speedSlug.amount);
+      speedSlug = false;
     }
   };
 
   return score;
+};
+
+var scoreSlug = function(name) {
+  var slug = {};
+  var score = 0;
+
+  var stubElement = $('<div class=\"slug\">'+name+' <span class=\"points\">+0</span></div>')
+  stubElement.appendTo($('#score'));
+  stubElement.addClass('show');
+
+  slug.addScore = function(amount) {
+    score += amount;
+    var prefix = (score < 0) ? "":"+";
+    stubElement.find('.points').html(prefix+score);
+  };
+
+  slug.done = function() {
+    stubElement.removeClass('show');
+  };
+
+  slug.__defineGetter__('amount', function(){
+    return score;
+  });
+
+  return slug;
 };
 var Shred = function(size) {
   var flake = new createjs.Shape();
