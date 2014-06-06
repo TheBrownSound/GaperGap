@@ -96,7 +96,8 @@ var GaperGap = (function(){
       {src:"tree_2.png", id:"tree-2"},
       {src:"tree_3.png", id:"tree-3"},
       {src:"cliff_1.png", id:"cliff-1"},
-      {src:"jump.png", id:"jump"},
+      {src:"jump_small.png", id:"jump-s"},
+      {src:"jump_medium.png", id:"jump-m"},
       {src:"hill_background.png", id:"hill-background"},
       {src:"sky.png", id:"sky"}
     ];

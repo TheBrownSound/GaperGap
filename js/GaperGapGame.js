@@ -1138,13 +1138,22 @@ var Tree = function() {
 };
 var Jump = function() {
   var jump = new createjs.Container();
-  var kicker = new createjs.Bitmap(GaperGap.assets['jump']);
+  var suffix = "s";
+  var kick = 0.5;
+  var switcher = GaperGap.utils.getRandomInt(0,4);
+
+  if (switcher >= 4) {
+    suffix = "m";
+    kick = 0.7;
+  }
+
+  var kicker = new createjs.Bitmap(GaperGap.assets['jump-'+suffix]);
   
   kicker.regX = kicker.image.width/2;
   // kicker.regY = kicker.image.height;
 
   jump.hit = function(player) {
-    var thrust = Math.round(GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y)*0.5);
+    var thrust = Math.round(GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y)*kick);
     player.jump(thrust);
     player.drop(kicker.image.height/2);
   };
@@ -1272,7 +1281,8 @@ var GaperGap = (function(){
       {src:"tree_2.png", id:"tree-2"},
       {src:"tree_3.png", id:"tree-3"},
       {src:"cliff_1.png", id:"cliff-1"},
-      {src:"jump.png", id:"jump"},
+      {src:"jump_small.png", id:"jump-s"},
+      {src:"jump_medium.png", id:"jump-m"},
       {src:"hill_background.png", id:"hill-background"},
       {src:"sky.png", id:"sky"}
     ];
