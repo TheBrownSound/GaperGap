@@ -1,6 +1,7 @@
 html, body {
   font-family: 'Luckiest Guy', sans-serif;
   color: #34AA90;
+  text-shadow: 1px 2px #0E705B;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -16,6 +17,20 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.box {
+  background-color: #61EDCE;
+  border-right: 3px solid;
+  border-bottom: 5px solid;
+  border-color: #34AA90;
+  color: #34AA90;
+  font-size: 22px;
+  line-height: 50px;
+  height: 50px;
+  padding: 8px 20px 0;
+  margin: 0;
+  border-radius: 25px;
 }
 
 #debug {
@@ -46,7 +61,7 @@ body {
   transform: translateY(100px);
 }
 
-#score .box {
+#score .board {
   background: url(../assets/score_box.png) top left no-repeat;
   font-size: 32px;
   height: 40px;
@@ -54,7 +69,6 @@ body {
   line-height: 40px;
   padding: 36px 0 10px;
   position: relative;
-  text-shadow: 1px 2px #0E705B;
   width: 148px;
   z-index: 20;
 }
@@ -76,6 +90,14 @@ body {
   -moz-transform: translateY(60px);
   -o-transform: translateY(60px);
   transform: translateY(60px);
+}
+
+#message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 #touch-controls {
