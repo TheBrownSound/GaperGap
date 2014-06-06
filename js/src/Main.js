@@ -120,9 +120,10 @@ var GaperGap = (function(){
     console.log('DOCUMENT READY');
     
     if ('ontouchstart' in window) { // mobile stuff
-      $(body).addClass('touch');
+      $('body').addClass('touch');
       
       $('left-turn').bind('touchstart', function(){
+        console.log('rawr');
         gapergap.dispatchEvent({type:'onKeyDown', key:"touch-left"});
       }).bind('touchend', function(){
         gapergap.dispatchEvent({type:'onKeyUp', key:"touch-left"});
