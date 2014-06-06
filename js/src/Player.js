@@ -236,7 +236,7 @@ var Player = function() {
         if (_air <= 0) {
           _air = 0;
         }
-        player.scaleX = player.scaleY = (_air/100)+0.75;
+        player.scaleX = player.scaleY = (_air/300)+0.75;
       }
 
       _verticalMomentum -= _gravity; // apply gravity after air

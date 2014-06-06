@@ -8,10 +8,11 @@ var Score = function(player, elementId){
   var speedSlug;
 
   var scoreElement = $('#score');
-  var scoreBox = $('#score .box');
+  var scoreBox = $('#score .board');
   scoreElement.addClass('show');
 
   function addToScore(amount) {
+    console.log('Score:add - ', amount);
     _total += amount;
     scoreBox.html(_total);
   }
@@ -20,6 +21,7 @@ var Score = function(player, elementId){
     if (event.target.type == "tree") {
       var slug = new ScoreSlug('Treehugger');
       slug.addScore(50);
+      addToScore(slug.amount);
       slug.done();
     }
   });
@@ -79,7 +81,6 @@ var ScoreSlug = function(name) {
     }, 500, function() {
       stubElement.remove();
     });
-    
   };
 
   slug.__defineGetter__('amount', function(){
