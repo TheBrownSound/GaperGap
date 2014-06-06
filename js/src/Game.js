@@ -16,7 +16,7 @@ var Game = function() {
 
   function updateView() {
     var totalSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
-    document.getElementById('speed').innerHTML = "Speed: "+totalSpeed;
+    document.getElementById('speed').innerHTML = "Speed: "+Math.round(totalSpeed);
     //var scale = Math.floor(player.maxSpeed-totalSpeed)/(player.maxSpeed*2)+0.5;
     if (totalSpeed > 10) {
       changeScale(0.5);
