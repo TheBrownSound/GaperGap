@@ -11,14 +11,16 @@ var Score = function(player, elementId){
   var scoreBox = $('#score .box');
   scoreElement.addClass('show');
 
-  function addToScore(amount, slug) {
+  function addToScore(amount) {
     _total += amount;
     scoreBox.html(_total);
   }
 
   player.addEventListener('hit', function(event) {
     if (event.target.type == "tree") {
-      addToScore(50, "Treehugger");
+      var slug = new ScoreSlug('Treehugger');
+      slug.addScore(50);
+      slug.done();
     }
   });
 
@@ -38,7 +40,7 @@ var Score = function(player, elementId){
     var totalSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
     if (totalSpeed > 10) {
       if (!speedSlug) {
-        speedSlug = new scoreSlug('Speedy McSpeederson');
+        speedSlug = new ScoreSlug('Speedy McSpeederson');
       } else {
         speedSlug.addScore(1);
       }
@@ -52,13 +54,17 @@ var Score = function(player, elementId){
   return score;
 };
 
-var scoreSlug = function(name) {
+var ScoreSlug = function(name) {
   var slug = {};
   var score = 0;
 
-  var stubElement = $('<div class=\"slug\">'+name+' <span class=\"points\">+0</span></div>')
+  var stubElement = $('<div class=\"slug\">'+name+' <span class=\"points\">+0</span></div>');
   stubElement.appendTo($('#score'));
-  stubElement.addClass('show');
+
+  stubElement.animate({
+    marginTop: "10px",
+    opacity: 1
+  }, 500);
 
   slug.addScore = function(amount) {
     score += amount;
@@ -67,7 +73,13 @@ var scoreSlug = function(name) {
   };
 
   slug.done = function() {
-    stubElement.removeClass('show');
+    stubElement.animate({
+      marginTop: "-60px",
+      opacity: 0
+    }, 500, function() {
+      stubElement.remove();
+    });
+    
   };
 
   slug.__defineGetter__('amount', function(){

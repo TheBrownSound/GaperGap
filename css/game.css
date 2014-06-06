@@ -41,12 +41,11 @@ body {
 }
 
 #score {
-  margin-left: -74px;
   position: absolute;
   text-align: center;
   top: -86px;
-  width: 148px;
-  left: 50%;
+  left: 0;
+  width: 100%;
 
   -webkit-transition: -webkit-transform 500ms ease-out;
   -moz-transition: -moz-transform 500ms ease-out;
@@ -70,34 +69,30 @@ body {
   padding: 36px 0 10px;
   position: relative;
   width: 148px;
+  margin: 0 auto;
   z-index: 20;
 }
 
 #score .slug {
-  position: absolute;
-  top: 40px;
+  margin-top: 60px;
   text-align: center;
-  width: 148px;
   z-index: 2;
-  -webkit-transition: -webkit-transform 500ms ease-out;
-  -moz-transition: -moz-transform 500ms ease-out;
-  -o-transition: -o-transform 500ms ease-out;
-  transition: transform 500ms ease-out;
-}
-
-#score .slug.show {
-  -webkit-transform: translateY(60px);
-  -moz-transform: translateY(60px);
-  -o-transform: translateY(60px);
-  transform: translateY(60px);
+  opacity: 0;
 }
 
 #message {
+  display: none;
   position: absolute;
   top: 50%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+     -moz-transform: translate(-50%, -50%);
+       -o-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
+#message.show {
+  display: block;
 }
 
 #touch-controls {
