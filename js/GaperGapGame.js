@@ -273,7 +273,7 @@ var Shred = function(size) {
 };
 var Skier = function() {
   var _angle = 0;
-  var _crossed = false;
+  var _crossed = 0;
   var _tucked = false;
   var skier = new createjs.Container();
 
@@ -404,9 +404,17 @@ var Skier = function() {
     //_crossed = bool;
   };
 
+  skier.crash = function(type) {
+    if (type === "tree") {
+      _crossed = -40;
+      this.angle = _angle;
+    }
+  };
+
   skier.reset = function(deg) {
     skier.squat(false);
     skier.tuck(false);
+    _crossed = 0;
     skier.angle = deg;
   };
 
@@ -429,9 +437,8 @@ var Skier = function() {
       head.gotoAndStop(0);
     }
 
-    var crosser = (_crossed) ? 40:0;
-    leftSki.rotation = _angle-crosser;
-    rightSki.rotation = _angle+crosser;
+    leftSki.rotation = _angle-_crossed;
+    rightSki.rotation = _angle+_crossed;
 
     var lift = (_angle < -90 || _angle > 90) ? 2 : 0;
 
@@ -702,7 +709,9 @@ var Player = function() {
     _drop = distance;
   };
 
-  player.crash = function() {
+  player.crash = function(type) {
+    type = type || "";
+    skier.crash(type);
     _speed = 0;
     player.dispatchEvent('crash');
   };
@@ -1060,44 +1069,41 @@ var Tree = function() {
   var hitSize = 40;
   var hasBeenHit = false;
 
-  var tree = {};
+  var tree = new createjs.Container();
   tree.type = 'tree';
   
-  var branches = new createjs.Container();
   var leaves = new createjs.Bitmap(
     GaperGap.assets['tree-'+GaperGap.utils.getRandomInt(1,3)]
   );
 
-  var base = new createjs.Container();
   var trunk = new createjs.Bitmap(
     GaperGap.assets['trunk-'+GaperGap.utils.getRandomInt(1,2)]
   );
   var hitBox = new createjs.Bitmap(GaperGap.assets['trunk-hitbox']);
   hitBox.alpha = 0;
   
-  base.addChild(hitBox, trunk);
-  branches.addChild(leaves);
+  tree.addChild(hitBox, trunk, leaves);
 
   hitBox.regX = hitBox.image.width/2;
   hitBox.regY = hitBox.image.height;
   trunk.regX = trunk.image.width/2;
   trunk.regY = trunk.image.height;
-  branches.regY = trunk.image.height;
   leaves.regX = leaves.image.width/2;
   leaves.regY = leaves.image.height*0.8;
+  leaves.y = -trunk.image.height;
 
   //leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
 
   tree.hit = function(player, collision) {
     if (!player.airborne && collision.width > 25) {
-      player.crash();
+      player.crash("tree");
     }
 
     if (!hasBeenHit) {
       player.hit(tree);
       var coords = trunk.globalToLocal(collision.x, collision.y);
       var impact = (coords.x-(trunk.image.width/2));
-      createjs.Tween.get(branches, {override:false})
+      createjs.Tween.get(leaves, {override:false})
         .to({rotation:-impact/2}, 100, createjs.Ease.circIn)
         .to({rotation:-impact/4}, 3000, createjs.Ease.elasticOut);
       hasBeenHit = true;
@@ -1109,30 +1115,7 @@ var Tree = function() {
   });
 
   tree.__defineGetter__('foreground', function(){
-    return branches;
-  });
-
-  tree.__defineGetter__('background', function(){
-    return base;
-  });
-
-  tree.__defineSetter__('x', function(val){
-    _x = base.x = branches.x = val;
-    return _x;
-  });
-
-  tree.__defineGetter__('x', function(){
-    return _x;
-  });
-
-  tree.__defineSetter__('y', function(val){
-    _y = base.y = val;
-    branches.y = val-20;
-    return _y;
-  });
-
-  tree.__defineGetter__('y', function(){
-    return _y;
+    return tree;
   });
 
   return tree;
@@ -1153,6 +1136,8 @@ var Jump = function() {
   kicker.regX = kicker.image.width/2;
   // kicker.regY = kicker.image.height;
 
+  jump.addChild(kicker);
+
   jump.hit = function(player) {
     var thrust = Math.round(GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y)*kick);
     player.jump(thrust);
@@ -1162,8 +1147,6 @@ var Jump = function() {
   jump.__defineGetter__('hitArea', function(){
     return kicker;
   });
-
-  jump.addChild(kicker);
 
   jump.__defineGetter__('background', function(){
     return jump;

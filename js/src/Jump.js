@@ -14,6 +14,8 @@ var Jump = function() {
   kicker.regX = kicker.image.width/2;
   // kicker.regY = kicker.image.height;
 
+  jump.addChild(kicker);
+
   jump.hit = function(player) {
     var thrust = Math.round(GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y)*kick);
     player.jump(thrust);
@@ -23,8 +25,6 @@ var Jump = function() {
   jump.__defineGetter__('hitArea', function(){
     return kicker;
   });
-
-  jump.addChild(kicker);
 
   jump.__defineGetter__('background', function(){
     return jump;

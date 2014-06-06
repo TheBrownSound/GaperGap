@@ -208,7 +208,9 @@ var Player = function() {
     _drop = distance;
   };
 
-  player.crash = function() {
+  player.crash = function(type) {
+    type = type || "";
+    skier.crash(type);
     _speed = 0;
     player.dispatchEvent('crash');
   };

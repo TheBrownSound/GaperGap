@@ -1,6 +1,6 @@
 var Skier = function() {
   var _angle = 0;
-  var _crossed = false;
+  var _crossed = 0;
   var _tucked = false;
   var skier = new createjs.Container();
 
@@ -131,9 +131,17 @@ var Skier = function() {
     //_crossed = bool;
   };
 
+  skier.crash = function(type) {
+    if (type === "tree") {
+      _crossed = -40;
+      this.angle = _angle;
+    }
+  };
+
   skier.reset = function(deg) {
     skier.squat(false);
     skier.tuck(false);
+    _crossed = 0;
     skier.angle = deg;
   };
 
@@ -156,9 +164,8 @@ var Skier = function() {
       head.gotoAndStop(0);
     }
 
-    var crosser = (_crossed) ? 40:0;
-    leftSki.rotation = _angle-crosser;
-    rightSki.rotation = _angle+crosser;
+    leftSki.rotation = _angle-_crossed;
+    rightSki.rotation = _angle+_crossed;
 
     var lift = (_angle < -90 || _angle > 90) ? 2 : 0;
 
