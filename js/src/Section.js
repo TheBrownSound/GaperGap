@@ -96,6 +96,13 @@ var Section = function(size, density, coords) {
 
   section.__defineSetter__('y', function(val){
     _y = _foreground.y = _background.y = val;
+    var center = _foreground.globalToLocal(GaperGap.width/2,GaperGap.height/2);
+    for (var i = 0; i < _foreground.getNumChildren(); i++) {
+      var child = _foreground.getChildAt(i);
+      if (child.y < center.y) {
+        _background.addChild(child);
+      }
+    }
     return _y;
   });
 
