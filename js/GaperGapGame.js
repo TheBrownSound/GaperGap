@@ -854,7 +854,7 @@ var Hill = function(player){
 
   function playerLanded() {
     console.log("player Landed");
-    hill.addChildAt(player, hill.getChildIndex(hillForeground));
+    hill.addChildAt(player, hill.getChildIndex(hillBackground)+1);
   }
 
   hill.update = function() {
