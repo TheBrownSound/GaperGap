@@ -20,32 +20,41 @@ var Section = function(size, density, coords) {
   //_background.addChild(trackShape);
   //trackShape.alpha = 0.3;
 
-  if (coords.y >= 0) {
-    while (_features.length < density) {
-      var feature = getRandomFeature();
+  //_background.addChild(debugOutline);
 
-      feature.x = GaperGap.utils.getRandomInt(0,size);
-      feature.y = GaperGap.utils.getRandomInt(0,size);
-      
-      _features.push(feature);
-
-      if (feature.background) {
-        _background.addChild(feature.background);
-      }
-      if (feature.foreground) {
-        _foreground.addChild(feature.foreground);
-      }
-    }
-
-    _background.sortChildren(sortFeatures);
-    _foreground.sortChildren(sortFeatures);
+  var sectionType = "default";
+  if (coords.y < 0) {
+    sectionType = "sky";
   } else {
-    // Top section, add sky graphic instead
-    var sky = new createjs.Bitmap(GaperGap.assets['sky']);
-    _background.addChild(sky);
+    var switcher = GaperGap.utils.getRandomInt(0,10);
+    if (switcher == 10) {
+      sectionType = "massive-cliff";
+    }
   }
 
-  //_background.addChild(debugOutline);
+  populateSection(sectionType);
+
+  function populateSection(type) {
+    console.log("section:type", type);
+    if (type === 'sky') {
+      var sky = new createjs.Bitmap(GaperGap.assets['sky']);
+      _background.addChild(sky);
+    } else if (type === 'massive-cliff') {
+      var cliff = new Cliff("cliff-massive");
+      cliff.x = cliff.y = size/2;
+      addFeature(cliff);
+    } else {
+      while (_features.length < density) {
+        var feature = getRandomFeature();
+        feature.x = GaperGap.utils.getRandomInt(0,size);
+        feature.y = GaperGap.utils.getRandomInt(0,size);
+        addFeature(feature);
+      }
+
+      _background.sortChildren(sortFeatures);
+      _foreground.sortChildren(sortFeatures);
+    }
+  }
 
   function getRandomFeature() {
     var selector = GaperGap.utils.getRandomInt(0,10);
@@ -56,6 +65,17 @@ var Section = function(size, density, coords) {
         return new Jump();
       default:
         return new Tree();
+    }
+  }
+
+  function addFeature(feature) {
+    _features.push(feature);
+
+    if (feature.background) {
+      _background.addChild(feature.background);
+    }
+    if (feature.foreground) {
+      _foreground.addChild(feature.foreground);
     }
   }
 

@@ -26,6 +26,7 @@ var Player = function() {
 
   // Speed Variables
   var _speed = 0;
+  var _crashed = false;
   var _axisSpeed = {
     x: 0,
     y: 0
@@ -63,7 +64,10 @@ var Player = function() {
     // calculate potential speed momentum
     var angle = (player.airborne) ? _airAngle : _turnAngle;
 
-    if (player.airborne) {
+    if (_crashed) {
+      _axisSpeed = {x:0,y:0};
+      return;
+    } else if (player.airborne) {
       _speed = _airSpeed;
     } else if (_airAngle !== false) {
       //TODO Might want to handle angle difference to adjust landing speed
@@ -208,9 +212,11 @@ var Player = function() {
   };
 
   player.crash = function(type) {
+    _crashed = true;
     type = type || "";
     skier.crash(type);
     _speed = 0;
+    player.update();
     player.dispatchEvent('crash');
   };
 
@@ -219,6 +225,7 @@ var Player = function() {
   };
 
   player.reset = function() {
+    _crashed = false;
     _speed = _turnMomentum = _axisSpeed.x = _axisSpeed.y = 0;
     _direction = null;
     _squatting = false;

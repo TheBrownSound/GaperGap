@@ -1,8 +1,6 @@
-var Cliff = function() {
-
-  var cliff = new createjs.Bitmap(
-    GaperGap.assets['cliff-'+GaperGap.utils.getRandomInt(1,1)]
-  );
+var Cliff = function(variant) {
+  variant = variant || 'cliff-'+GaperGap.utils.getRandomInt(1,1);
+  var cliff = new createjs.Bitmap(GaperGap.assets[variant]);
 
   cliff.regX = cliff.image.width/2;
   cliff.regY = cliff.image.height/2;
