@@ -22,6 +22,8 @@ var GaperGap = (function(){
   var dispatcher = createjs.EventDispatcher.initialize(gapergap);
   var preloader, stage, game;
 
+  var messageBox = $('#message');
+
   function handleFileLoad(event) {
     console.log('handleFileLoad: ', event);
     _preloadAssets.push(event.item);
@@ -37,7 +39,6 @@ var GaperGap = (function(){
 
     game = new Game();
 
-    var messageBox = $('#message');
     messageBox.removeClass('initial');
     messageBox.removeClass('show');
 
