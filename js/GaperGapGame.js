@@ -1123,7 +1123,7 @@ var Tree = function() {
   //leaves.scaleX = (GaperGap.utils.yesNo()) ? 1:-1;// Reverses tree, note: messes up hit detection :(
 
   tree.hit = function(player, collision) {
-    if (!player.airborne && collision.width > 25) {
+    if (!player.airborne && collision.width > 25*player.scaleX) {
       player.crash("tree");
     }
 
