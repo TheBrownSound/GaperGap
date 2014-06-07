@@ -37,6 +37,10 @@ var GaperGap = (function(){
 
     game = new Game();
 
+    var messageBox = $('#message');
+    messageBox.removeClass('initial');
+    messageBox.removeClass('show');
+
     stage.addChild(game);
 
     //Ticker
@@ -71,6 +75,15 @@ var GaperGap = (function(){
     stage.update();
     document.getElementById('fps').innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
   }
+
+  gapergap.showMessage = function(msg) {
+    messageBox.html(msg);
+    messageBox.addClass('show');
+  };
+
+  gapergap.hideMessage = function() {
+    messageBox.removeClass('show');
+  };
 
   gapergap.init = function(canvasId) {
     console.log('Game:init');

@@ -10,7 +10,7 @@ html, body {
 }
 
 body {
-  background: #666;
+  background: #2D496A url(../assets/gabe_loader.png) center bottom no-repeat;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -93,6 +93,10 @@ body {
 
 #message.show {
   display: block;
+}
+
+#message.initial {
+  top: 25%;
 }
 
 #touch-controls {

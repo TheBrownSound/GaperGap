@@ -45,8 +45,6 @@ var Game = function() {
   var updateInterval = setInterval(updateGame, Math.floor(1000/60));
   var viewInterval = setInterval(updateView, 500);
 
-  var messageBox = $('#message');
-
   function updateView() {
     var totalSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
     document.getElementById('speed').innerHTML = "Speed: "+Math.round(totalSpeed);
@@ -88,11 +86,6 @@ var Game = function() {
     }
   }
 
-  function showMessage(msg) {
-    messageBox.html(msg);
-    messageBox.addClass('show');
-  }
-
   game.reset = function() {
     _startOffset = 120;
     player.reset();
@@ -103,7 +96,7 @@ var Game = function() {
 
   player.addEventListener('crash', function(event) {
     // show reset
-    showMessage("Press enter to restart.");
+    GaperGap.showMessage("Press enter to restart.");
     _crashed = true;
   });
 
@@ -137,7 +130,7 @@ var Game = function() {
       if (event.key === 13) { // ENTER
         game.reset();
         _crashed = false;
-        messageBox.removeClass('show');
+        GaperGap.hideMessage();
       }
       return;
     }
@@ -1234,6 +1227,10 @@ var GaperGap = (function(){
 
     game = new Game();
 
+    var messageBox = $('#message');
+    messageBox.removeClass('initial');
+    messageBox.removeClass('show');
+
     stage.addChild(game);
 
     //Ticker
@@ -1268,6 +1265,15 @@ var GaperGap = (function(){
     stage.update();
     document.getElementById('fps').innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
   }
+
+  gapergap.showMessage = function(msg) {
+    messageBox.html(msg);
+    messageBox.addClass('show');
+  };
+
+  gapergap.hideMessage = function() {
+    messageBox.removeClass('show');
+  };
 
   gapergap.init = function(canvasId) {
     console.log('Game:init');

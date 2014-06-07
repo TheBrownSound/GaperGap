@@ -14,8 +14,6 @@ var Game = function() {
   var updateInterval = setInterval(updateGame, Math.floor(1000/60));
   var viewInterval = setInterval(updateView, 500);
 
-  var messageBox = $('#message');
-
   function updateView() {
     var totalSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
     document.getElementById('speed').innerHTML = "Speed: "+Math.round(totalSpeed);
@@ -57,11 +55,6 @@ var Game = function() {
     }
   }
 
-  function showMessage(msg) {
-    messageBox.html(msg);
-    messageBox.addClass('show');
-  }
-
   game.reset = function() {
     _startOffset = 120;
     player.reset();
@@ -72,7 +65,7 @@ var Game = function() {
 
   player.addEventListener('crash', function(event) {
     // show reset
-    showMessage("Press enter to restart.");
+    GaperGap.showMessage("Press enter to restart.");
     _crashed = true;
   });
 
@@ -106,7 +99,7 @@ var Game = function() {
       if (event.key === 13) { // ENTER
         game.reset();
         _crashed = false;
-        messageBox.removeClass('show');
+        GaperGap.hideMessage();
       }
       return;
     }
