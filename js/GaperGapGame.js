@@ -180,6 +180,7 @@ var Score = function(player, elementId){
   var _speedtime = 0;
 
   var speedSlug;
+  var airSlug;
 
   var scoreElement = $('#score');
   var scoreBox = $('#score .board');
@@ -193,7 +194,7 @@ var Score = function(player, elementId){
 
   player.addEventListener('hit', function(event) {
     if (event.target.type == "tree") {
-      var slug = new ScoreSlug('Treehugger');
+      var slug = new ScoreSlug('Treehugger', addToScore);
       slug.addScore(50);
       addToScore(slug.amount);
       slug.done();
@@ -207,16 +208,21 @@ var Score = function(player, elementId){
 
   score.update = function() {
     if (player.airborne) {
-      _airtime++;
-    } else if (_airtime > 0) {
-      addToScore(_airtime);
-      _airtime = 0;
+      if (!airSlug) {
+        airSlug = new ScoreSlug('Air', addToScore);
+      } else {
+        airSlug.addScore(2);
+      }
+    } else if (airSlug) {
+      airSlug.done();
+      addToScore(airSlug.amount);
+      airSlug = false;
     }
 
     var totalSpeed = GaperGap.utils.getTotalSpeed(player.speed.x, player.speed.y);
     if (totalSpeed > 10) {
       if (!speedSlug) {
-        speedSlug = new ScoreSlug('Speedy McSpeederson');
+        speedSlug = new ScoreSlug('Speedy McSpeederson', addToScore);
       } else {
         speedSlug.addScore(1);
       }
@@ -230,7 +236,7 @@ var Score = function(player, elementId){
   return score;
 };
 
-var ScoreSlug = function(name) {
+var ScoreSlug = function(name, scoreFn) {
   var slug = {};
   var score = 0;
 
@@ -249,12 +255,15 @@ var ScoreSlug = function(name) {
   };
 
   slug.done = function() {
-    stubElement.animate({
-      marginTop: "-60px",
-      opacity: 0
-    }, 500, function() {
-      stubElement.remove();
-    });
+    setTimeout(function(){
+      stubElement.animate({
+        marginTop: "-60px",
+        opacity: 0
+      }, 500, function() {
+        scoreFn(score);
+        stubElement.remove();
+      });
+    }, 1000);
   };
 
   slug.__defineGetter__('amount', function(){
