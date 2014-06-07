@@ -413,6 +413,14 @@ var Skier = function() {
     }
   };
 
+  skier.plow = function(bool) {
+    if (bool) {
+      _crossed = 10;
+    } else {
+      _crossed = 0;
+    }
+  };
+
   skier.cross = function(bool) {
     //_crossed = bool;
   };
@@ -590,15 +598,13 @@ var Player = function() {
       _airSpeed = 0;
     }
     
-    if (_scrubbing) {
-      _speed -= _scrubRate;
-    } else {
-      var accel = 90-(Math.abs(angle));
-      accel = Math.round(accel * 10) / 1000; // decreases number/decimal for animation
-      _speed += accel;
-    }
+    var accel = 90-(Math.abs(angle));
+    accel = Math.round(accel * 10) / 1000; // decreases number/decimal for animation
+    _speed += accel;
 
-    var max = _maxSpeed+calculateTuckModifier();
+    var scrubModifier = (_scrubbing) ? 4 : 0;
+
+    var max = _maxSpeed+calculateTuckModifier()-scrubModifier;
     if (_speed > max) {
       _speed = max;
     } else if (_speed < -max) {
@@ -675,6 +681,7 @@ var Player = function() {
   };
 
   player.scrubSpeed = function(bool) {
+    skier.plow(bool);
     _scrubbing = bool;
   };
 

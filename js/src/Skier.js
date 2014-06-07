@@ -127,6 +127,14 @@ var Skier = function() {
     }
   };
 
+  skier.plow = function(bool) {
+    if (bool) {
+      _crossed = 10;
+    } else {
+      _crossed = 0;
+    }
+  };
+
   skier.cross = function(bool) {
     //_crossed = bool;
   };
