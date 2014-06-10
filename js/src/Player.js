@@ -288,6 +288,10 @@ var Player = function() {
     calculateSpeed();
   };
 
+  player.__defineGetter__('sunk', function(){
+    return _sunk;
+  });
+
   player.__defineGetter__('speed', function(){
     return _axisSpeed;
   });

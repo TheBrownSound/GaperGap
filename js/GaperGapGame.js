@@ -284,6 +284,31 @@ var Shred = function(size) {
 
   return flake;
 };
+
+var SnowBall = function() {
+  var ball = new createjs.Bitmap(GaperGap.assets['snow-ball']);
+  ball.regX = ball.image.width/2;
+  ball.regY = ball.image.height/2;
+
+  ball.destroy = function() {
+    this.parent.removeChild(this);
+  };
+
+  ball.plow = function() {
+    var xDest = GaperGap.utils.getRandomInt(-40, 40);
+    var yDest = GaperGap.utils.getRandomInt(-40, 0);
+    var angle = GaperGap.utils.getRandomInt(0, 360);
+
+    createjs.Tween.get(ball, {override:true}).to({
+      x: xDest,
+      y: yDest,
+      rotation: angle
+    }, 700, createjs.Ease.sineOut).to({
+      alpha: 0
+    }, 1000, createjs.Ease.sineOut).call(this.destroy);
+  };
+  return ball;
+};
 var Skier = function() {
   var _angle = 0;
   var _crossed = 0;
@@ -360,8 +385,14 @@ var Skier = function() {
   leftSki.gotoAndStop(2);
   rightSki.gotoAndStop(2);
 
+  // Powder Push
+  var push = new createjs.Bitmap(GaperGap.assets['snow-push']);
+  push.regX = push.image.width/2;
+  push.regY = push.image.height/2;
+  push.scaleY = 0;
+
   body.addChild(torso, head);
-  skier.addChild(leftSki, rightSki, pants, body);
+  skier.addChild(leftSki, rightSki, pants, push, body);
 
   skier.turn = function(dir) {
     var tilt = 10;
@@ -435,9 +466,15 @@ var Skier = function() {
   skier.sink = function(bool) {
     console.log('sink! - ', bool);
     if (bool) {
-      pants.alpha = leftSki.alpha = rightSki.alpha = 0;
+      createjs.Tween.get(push, {override:true}).to({
+        scaleX: 1,
+        scaleY: 1
+      }, 300, createjs.Ease.bounceOut);
     } else {
-      pants.alpha = leftSki.alpha = rightSki.alpha = 1;
+      createjs.Tween.get(push, {override:true}).to({
+        scaleX: 0,
+        scaleY: 0
+      }, 500, createjs.Ease.circOut);
     }
   };
 
@@ -819,6 +856,10 @@ var Player = function() {
     calculateSpeed();
   };
 
+  player.__defineGetter__('sunk', function(){
+    return _sunk;
+  });
+
   player.__defineGetter__('speed', function(){
     return _axisSpeed;
   });
@@ -910,7 +951,15 @@ var Hill = function(player){
     _xPos += player.speed.x;
     _yPos += player.speed.y;
 
-    
+    if (player.sunk) {
+      var ball = new SnowBall();
+      //var coords = hillParticles.globalToLocal(0,0);
+      //ball.x = coords.x;
+      //ball.y = coords.y;
+      hillForeground.addChild(ball);
+      ball.plow();
+    }
+
     var currentSection = {
       col: Math.floor(-_xPos/section_size),
       row: Math.floor(-_yPos/section_size)
@@ -1382,6 +1431,8 @@ var GaperGap = (function(){
       {src:"pants.png", id:"pants-sprite"},
       {src:"ski_sprite.png", id:"ski-sprite"},
       {src:"hitbox.png", id:"player-hitbox"},
+      {src:"snow_push.png", id:"snow-push"},
+      {src:"snow_ball.png", id:"snow-ball"},
       {src:"trunk_hit.png", id:"trunk-hitbox"},
       {src:"trunk_1.png", id:"trunk-1"},
       {src:"trunk_2.png", id:"trunk-2"},

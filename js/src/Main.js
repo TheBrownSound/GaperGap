@@ -104,6 +104,8 @@ var GaperGap = (function(){
       {src:"pants.png", id:"pants-sprite"},
       {src:"ski_sprite.png", id:"ski-sprite"},
       {src:"hitbox.png", id:"player-hitbox"},
+      {src:"snow_push.png", id:"snow-push"},
+      {src:"snow_ball.png", id:"snow-ball"},
       {src:"trunk_hit.png", id:"trunk-hitbox"},
       {src:"trunk_1.png", id:"trunk-1"},
       {src:"trunk_2.png", id:"trunk-2"},

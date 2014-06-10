@@ -74,8 +74,14 @@ var Skier = function() {
   leftSki.gotoAndStop(2);
   rightSki.gotoAndStop(2);
 
+  // Powder Push
+  var push = new createjs.Bitmap(GaperGap.assets['snow-push']);
+  push.regX = push.image.width/2;
+  push.regY = push.image.height/2;
+  push.scaleY = 0;
+
   body.addChild(torso, head);
-  skier.addChild(leftSki, rightSki, pants, body);
+  skier.addChild(leftSki, rightSki, pants, push, body);
 
   skier.turn = function(dir) {
     var tilt = 10;
@@ -149,9 +155,15 @@ var Skier = function() {
   skier.sink = function(bool) {
     console.log('sink! - ', bool);
     if (bool) {
-      pants.alpha = leftSki.alpha = rightSki.alpha = 0;
+      createjs.Tween.get(push, {override:true}).to({
+        scaleX: 1,
+        scaleY: 1
+      }, 300, createjs.Ease.bounceOut);
     } else {
-      pants.alpha = leftSki.alpha = rightSki.alpha = 1;
+      createjs.Tween.get(push, {override:true}).to({
+        scaleX: 0,
+        scaleY: 0
+      }, 500, createjs.Ease.circOut);
     }
   };
 

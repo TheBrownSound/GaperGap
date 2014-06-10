@@ -71,7 +71,15 @@ var Hill = function(player){
     _xPos += player.speed.x;
     _yPos += player.speed.y;
 
-    
+    if (player.sunk) {
+      var ball = new SnowBall();
+      //var coords = hillParticles.globalToLocal(0,0);
+      //ball.x = coords.x;
+      //ball.y = coords.y;
+      hillForeground.addChild(ball);
+      ball.plow();
+    }
+
     var currentSection = {
       col: Math.floor(-_xPos/section_size),
       row: Math.floor(-_yPos/section_size)
