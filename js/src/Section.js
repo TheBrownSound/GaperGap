@@ -49,7 +49,7 @@ var Section = function(size, density, coords) {
       while (_features.length < density) {
         var feature;
         if (type === "powder-field") {
-          feature = new PowderPatch();
+          feature = new PowderStash();
         } else {
           feature = getRandomFeature();
         }
@@ -71,7 +71,7 @@ var Section = function(size, density, coords) {
       case 2:
         return new Jump();
       case 3:
-        return new PowderPatch();
+        return new PowderStash();
       default:
         return new Tree();
     }

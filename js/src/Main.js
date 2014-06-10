@@ -9,7 +9,7 @@
 // @depends Section.js
 // @depends Tree.js
 // @depends Jump.js
-// @depends PowderPatch.js
+// @depends PowderStash.js
 // @depends Cliff.js
 
 // Parent Game Logic
@@ -104,15 +104,15 @@ var GaperGap = (function(){
       {src:"pants.png", id:"pants-sprite"},
       {src:"ski_sprite.png", id:"ski-sprite"},
       {src:"hitbox.png", id:"player-hitbox"},
-      {src:"snow_push.png", id:"snow-push"},
       {src:"snow_ball.png", id:"snow-ball"},
+      {src:"powder_blob.png", id:"powder-blob"},
       {src:"trunk_hit.png", id:"trunk-hitbox"},
       {src:"trunk_1.png", id:"trunk-1"},
       {src:"trunk_2.png", id:"trunk-2"},
       {src:"tree_1.png", id:"tree-1"},
       {src:"tree_2.png", id:"tree-2"},
       {src:"tree_3.png", id:"tree-3"},
-      {src:"powder_patch.png", id:"powder-patch"},
+      {src:"powder_patch.png", id:"powder-stash"},
       {src:"cliff_1.png", id:"cliff-1"},
       {src:"cliff_massive.png", id:"cliff-massive"},
       {src:"jump_small.png", id:"jump-s"},

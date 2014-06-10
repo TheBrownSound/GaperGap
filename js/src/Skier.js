@@ -2,6 +2,7 @@ var Skier = function() {
   var _angle = 0;
   var _crossed = 0;
   var _tucked = false;
+  var _sunk = false;
   var skier = new createjs.Container();
 
   var _bodyBase = {
@@ -74,14 +75,14 @@ var Skier = function() {
   leftSki.gotoAndStop(2);
   rightSki.gotoAndStop(2);
 
-  // Powder Push
-  var push = new createjs.Bitmap(GaperGap.assets['snow-push']);
-  push.regX = push.image.width/2;
-  push.regY = push.image.height/2;
-  push.scaleY = 0;
+  // Powder Blob
+  var blob = new createjs.Bitmap(GaperGap.assets['powder-blob']);
+  blob.regX = blob.image.width/2;
+  blob.regY = blob.image.height/2;
+  blob.scaleX = blob.scaleY = 0;
 
   body.addChild(torso, head);
-  skier.addChild(leftSki, rightSki, pants, push, body);
+  skier.addChild(leftSki, rightSki, pants, blob, body);
 
   skier.turn = function(dir) {
     var tilt = 10;
@@ -154,12 +155,13 @@ var Skier = function() {
 
   skier.sink = function(bool) {
     console.log('sink! - ', bool);
+    _sunk = bool;
     if (bool) {
       createjs.Tween.get(skier, {override:true}).to({
         y: 20
       }, 500, createjs.Ease.sineIn);
 
-      createjs.Tween.get(push, {override:true}).to({
+      createjs.Tween.get(blob, {override:true}).to({
         scaleX: 1,
         scaleY: 1
       }, 300, createjs.Ease.bounceOut);
@@ -168,7 +170,7 @@ var Skier = function() {
         y: 0
       }, 200, createjs.Ease.circOut);
 
-      createjs.Tween.get(push, {override:true}).to({
+      createjs.Tween.get(blob, {override:true}).to({
         scaleX: 0,
         scaleY: 0
       }, 500, createjs.Ease.circOut);
@@ -188,6 +190,10 @@ var Skier = function() {
 
   skier.__defineSetter__('angle', function(deg) {
     _angle = deg;
+
+    if (_sunk) {
+      blob.rotation++;
+    }
 
     if (_angle < -90 || _angle > 90) {
       torso.gotoAndStop(2);

@@ -316,6 +316,7 @@ var Skier = function() {
   var _angle = 0;
   var _crossed = 0;
   var _tucked = false;
+  var _sunk = false;
   var skier = new createjs.Container();
 
   var _bodyBase = {
@@ -388,14 +389,14 @@ var Skier = function() {
   leftSki.gotoAndStop(2);
   rightSki.gotoAndStop(2);
 
-  // Powder Push
-  var push = new createjs.Bitmap(GaperGap.assets['snow-push']);
-  push.regX = push.image.width/2;
-  push.regY = push.image.height/2;
-  push.scaleY = 0;
+  // Powder Blob
+  var blob = new createjs.Bitmap(GaperGap.assets['powder-blob']);
+  blob.regX = blob.image.width/2;
+  blob.regY = blob.image.height/2;
+  blob.scaleX = blob.scaleY = 0;
 
   body.addChild(torso, head);
-  skier.addChild(leftSki, rightSki, pants, push, body);
+  skier.addChild(leftSki, rightSki, pants, blob, body);
 
   skier.turn = function(dir) {
     var tilt = 10;
@@ -468,12 +469,13 @@ var Skier = function() {
 
   skier.sink = function(bool) {
     console.log('sink! - ', bool);
+    _sunk = bool;
     if (bool) {
       createjs.Tween.get(skier, {override:true}).to({
         y: 20
       }, 500, createjs.Ease.sineIn);
 
-      createjs.Tween.get(push, {override:true}).to({
+      createjs.Tween.get(blob, {override:true}).to({
         scaleX: 1,
         scaleY: 1
       }, 300, createjs.Ease.bounceOut);
@@ -482,7 +484,7 @@ var Skier = function() {
         y: 0
       }, 200, createjs.Ease.circOut);
 
-      createjs.Tween.get(push, {override:true}).to({
+      createjs.Tween.get(blob, {override:true}).to({
         scaleX: 0,
         scaleY: 0
       }, 500, createjs.Ease.circOut);
@@ -502,6 +504,10 @@ var Skier = function() {
 
   skier.__defineSetter__('angle', function(deg) {
     _angle = deg;
+
+    if (_sunk) {
+      blob.rotation++;
+    }
 
     if (_angle < -90 || _angle > 90) {
       torso.gotoAndStop(2);
@@ -1125,7 +1131,7 @@ var Section = function(size, density, coords) {
       while (_features.length < density) {
         var feature;
         if (type === "powder-field") {
-          feature = new PowderPatch();
+          feature = new PowderStash();
         } else {
           feature = getRandomFeature();
         }
@@ -1147,7 +1153,7 @@ var Section = function(size, density, coords) {
       case 2:
         return new Jump();
       case 3:
-        return new PowderPatch();
+        return new PowderStash();
       default:
         return new Tree();
     }
@@ -1306,25 +1312,25 @@ var Jump = function() {
 
   return jump;
 };
-var PowderPatch = function() {
-  var patch = new createjs.Bitmap(GaperGap.assets['powder-patch']);
-  patch.type = 'powder';
+var PowderStash = function() {
+  var stash = new createjs.Bitmap(GaperGap.assets['powder-stash']);
+  stash.type = 'powder';
 
-  patch.hit = function(player, collision) {
+  stash.hit = function(player, collision) {
     if (!player.airborne) {
       player.sink(this);
     }
   };
 
-  patch.__defineGetter__('hitArea', function(){
-    return patch;
+  stash.__defineGetter__('hitArea', function(){
+    return stash;
   });
 
-  patch.__defineGetter__('background', function(){
-    return patch;
+  stash.__defineGetter__('background', function(){
+    return stash;
   });
 
-  return patch;
+  return stash;
 };
 var Cliff = function(variant) {
   variant = variant || 'cliff-'+GaperGap.utils.getRandomInt(1,1);
@@ -1442,15 +1448,15 @@ var GaperGap = (function(){
       {src:"pants.png", id:"pants-sprite"},
       {src:"ski_sprite.png", id:"ski-sprite"},
       {src:"hitbox.png", id:"player-hitbox"},
-      {src:"snow_push.png", id:"snow-push"},
       {src:"snow_ball.png", id:"snow-ball"},
+      {src:"powder_blob.png", id:"powder-blob"},
       {src:"trunk_hit.png", id:"trunk-hitbox"},
       {src:"trunk_1.png", id:"trunk-1"},
       {src:"trunk_2.png", id:"trunk-2"},
       {src:"tree_1.png", id:"tree-1"},
       {src:"tree_2.png", id:"tree-2"},
       {src:"tree_3.png", id:"tree-3"},
-      {src:"powder_patch.png", id:"powder-patch"},
+      {src:"powder_patch.png", id:"powder-stash"},
       {src:"cliff_1.png", id:"cliff-1"},
       {src:"cliff_massive.png", id:"cliff-massive"},
       {src:"jump_small.png", id:"jump-s"},
