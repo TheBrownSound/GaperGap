@@ -148,8 +148,21 @@ var Skier = function() {
 
   skier.crash = function(type) {
     if (type === "tree") {
-      _crossed = -40;
-      this.angle = _angle;
+      var leftXForce = GaperGap.utils.getRandomInt(-10, -400);
+      var leftYForce = GaperGap.utils.getRandomInt(0,200);
+      createjs.Tween.get(leftSki, {override:true}).to({
+        x: leftXForce,
+        y: leftYForce,
+        rotation: GaperGap.utils.getRandomInt(-leftXForce,leftXForce)
+      }, Math.abs(leftXForce+leftYForce)*2, createjs.Ease.sineOut);
+
+      var rightXForce = GaperGap.utils.getRandomInt(10, 400);
+      var rightYForce = GaperGap.utils.getRandomInt(0,200);
+      createjs.Tween.get(rightSki, {override:true}).to({
+        x: rightXForce,
+        y: rightYForce,
+        rotation: GaperGap.utils.getRandomInt(-rightXForce,rightXForce)
+      }, (rightXForce+rightYForce)*2, createjs.Ease.sineOut);
     }
   };
 
