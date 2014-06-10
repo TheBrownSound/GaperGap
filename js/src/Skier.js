@@ -155,11 +155,19 @@ var Skier = function() {
   skier.sink = function(bool) {
     console.log('sink! - ', bool);
     if (bool) {
+      createjs.Tween.get(skier, {override:true}).to({
+        y: 20
+      }, 500, createjs.Ease.sineIn);
+
       createjs.Tween.get(push, {override:true}).to({
         scaleX: 1,
         scaleY: 1
       }, 300, createjs.Ease.bounceOut);
     } else {
+      createjs.Tween.get(skier, {override:true}).to({
+        y: 0
+      }, 200, createjs.Ease.circOut);
+
       createjs.Tween.get(push, {override:true}).to({
         scaleX: 0,
         scaleY: 0

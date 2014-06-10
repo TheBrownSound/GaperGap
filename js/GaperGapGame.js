@@ -296,16 +296,19 @@ var SnowBall = function() {
 
   ball.plow = function() {
     var xDest = GaperGap.utils.getRandomInt(-40, 40);
-    var yDest = GaperGap.utils.getRandomInt(-40, 0);
-    var angle = GaperGap.utils.getRandomInt(0, 360);
+    var yDest = GaperGap.utils.getRandomInt(-40, 40);
+    ball.rotation = GaperGap.utils.getRandomInt(0, 360);
+    var scale = GaperGap.utils.getRandomFloat(0.5, 1);
 
-    createjs.Tween.get(ball, {override:true}).to({
+    createjs.Tween.get(ball, {override:false}).to({
       x: xDest,
-      y: yDest,
-      rotation: angle
-    }, 700, createjs.Ease.sineOut).to({
-      alpha: 0
-    }, 1000, createjs.Ease.sineOut).call(this.destroy);
+      y: yDest
+    }, 700, createjs.Ease.sineOut);
+
+    createjs.Tween.get(ball, {override:false}).to({
+      scaleX: scale,
+      scaleY: scale
+    }, 700, createjs.Ease.quintOut).call(this.destroy);
   };
   return ball;
 };
@@ -466,11 +469,19 @@ var Skier = function() {
   skier.sink = function(bool) {
     console.log('sink! - ', bool);
     if (bool) {
+      createjs.Tween.get(skier, {override:true}).to({
+        y: 20
+      }, 500, createjs.Ease.sineIn);
+
       createjs.Tween.get(push, {override:true}).to({
         scaleX: 1,
         scaleY: 1
       }, 300, createjs.Ease.bounceOut);
     } else {
+      createjs.Tween.get(skier, {override:true}).to({
+        y: 0
+      }, 200, createjs.Ease.circOut);
+
       createjs.Tween.get(push, {override:true}).to({
         scaleX: 0,
         scaleY: 0
