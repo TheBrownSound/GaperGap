@@ -146,6 +146,15 @@ var Skier = function() {
     }
   };
 
+  skier.sink = function(bool) {
+    console.log('sink! - ', bool);
+    if (bool) {
+      pants.alpha = leftSki.alpha = rightSki.alpha = 0;
+    } else {
+      pants.alpha = leftSki.alpha = rightSki.alpha = 1;
+    }
+  };
+
   skier.reset = function(deg) {
     skier.squat(false);
     skier.tuck(false);

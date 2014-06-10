@@ -29,6 +29,8 @@ var Section = function(size, density, coords) {
     var switcher = GaperGap.utils.getRandomInt(0,10);
     if (switcher == 10) {
       sectionType = "massive-cliff";
+    } else if (switcher == 9) {
+      sectionType = "powder-field";
     }
   }
 
@@ -45,7 +47,12 @@ var Section = function(size, density, coords) {
       addFeature(cliff);
     } else {
       while (_features.length < density) {
-        var feature = getRandomFeature();
+        var feature;
+        if (type === "powder-field") {
+          feature = new PowderPatch();
+        } else {
+          feature = getRandomFeature();
+        }
         feature.x = GaperGap.utils.getRandomInt(0,size);
         feature.y = GaperGap.utils.getRandomInt(0,size);
         addFeature(feature);
@@ -63,6 +70,8 @@ var Section = function(size, density, coords) {
         return new Cliff();
       case 2:
         return new Jump();
+      case 3:
+        return new PowderPatch();
       default:
         return new Tree();
     }

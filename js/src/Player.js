@@ -60,6 +60,10 @@ var Player = function() {
   var _airSpeed = 0;
   var _squatting = false;
 
+  // Powder
+  var _sunk = false;
+  var _powderFields = [];
+
   function calculateSpeed() {
     // calculate potential speed momentum
     var angle = (player.airborne) ? _airAngle : _turnAngle;
@@ -121,8 +125,8 @@ var Player = function() {
 
     var turnSpeed = 4;
     if (player.airborne) {
-      turnSpeed = 6;
-    } else if (_tucking) {
+      turnSpeed = 8;
+    } else if (_tucking || _sunk) {
       turnSpeed = 2;
     }
     _turnAngle += (_turnMomentum/_acceleration)*turnSpeed;
@@ -187,6 +191,10 @@ var Player = function() {
     skier.squat(true);
   };
 
+  player.sink = function(field){
+    _powderFields.push(field);
+  };
+
   player.jump = function(thrust) {
     thrust = thrust || 0;
     if (_squatting) {
@@ -234,6 +242,17 @@ var Player = function() {
   };
 
   player.update = function() {
+    if (_powderFields.length > 0) {
+      if (!_sunk) {
+        _sunk = true;
+        skier.sink(true);
+      }
+      _powderFields.length = 0;
+    } else if (_sunk) {
+      skier.sink(false);
+      _sunk = false;
+    }
+
     var turnAngle = calculateTurnAngle();
     skier.angle = turnAngle;
 

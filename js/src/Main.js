@@ -9,6 +9,7 @@
 // @depends Section.js
 // @depends Tree.js
 // @depends Jump.js
+// @depends PowderPatch.js
 // @depends Cliff.js
 
 // Parent Game Logic
@@ -109,6 +110,7 @@ var GaperGap = (function(){
       {src:"tree_1.png", id:"tree-1"},
       {src:"tree_2.png", id:"tree-2"},
       {src:"tree_3.png", id:"tree-3"},
+      {src:"powder_patch.png", id:"powder-patch"},
       {src:"cliff_1.png", id:"cliff-1"},
       {src:"cliff_massive.png", id:"cliff-massive"},
       {src:"jump_small.png", id:"jump-s"},

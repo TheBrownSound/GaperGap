@@ -432,6 +432,15 @@ var Skier = function() {
     }
   };
 
+  skier.sink = function(bool) {
+    console.log('sink! - ', bool);
+    if (bool) {
+      pants.alpha = leftSki.alpha = rightSki.alpha = 0;
+    } else {
+      pants.alpha = leftSki.alpha = rightSki.alpha = 1;
+    }
+  };
+
   skier.reset = function(deg) {
     skier.squat(false);
     skier.tuck(false);
@@ -582,6 +591,10 @@ var Player = function() {
   var _airSpeed = 0;
   var _squatting = false;
 
+  // Powder
+  var _sunk = false;
+  var _powderFields = [];
+
   function calculateSpeed() {
     // calculate potential speed momentum
     var angle = (player.airborne) ? _airAngle : _turnAngle;
@@ -643,8 +656,8 @@ var Player = function() {
 
     var turnSpeed = 4;
     if (player.airborne) {
-      turnSpeed = 6;
-    } else if (_tucking) {
+      turnSpeed = 8;
+    } else if (_tucking || _sunk) {
       turnSpeed = 2;
     }
     _turnAngle += (_turnMomentum/_acceleration)*turnSpeed;
@@ -709,6 +722,10 @@ var Player = function() {
     skier.squat(true);
   };
 
+  player.sink = function(field){
+    _powderFields.push(field);
+  };
+
   player.jump = function(thrust) {
     thrust = thrust || 0;
     if (_squatting) {
@@ -756,6 +773,17 @@ var Player = function() {
   };
 
   player.update = function() {
+    if (_powderFields.length > 0) {
+      if (!_sunk) {
+        _sunk = true;
+        skier.sink(true);
+      }
+      _powderFields.length = 0;
+    } else if (_sunk) {
+      skier.sink(false);
+      _sunk = false;
+    }
+
     var turnAngle = calculateTurnAngle();
     skier.angle = turnAngle;
 
@@ -1017,6 +1045,8 @@ var Section = function(size, density, coords) {
     var switcher = GaperGap.utils.getRandomInt(0,10);
     if (switcher == 10) {
       sectionType = "massive-cliff";
+    } else if (switcher == 9) {
+      sectionType = "powder-field";
     }
   }
 
@@ -1033,7 +1063,12 @@ var Section = function(size, density, coords) {
       addFeature(cliff);
     } else {
       while (_features.length < density) {
-        var feature = getRandomFeature();
+        var feature;
+        if (type === "powder-field") {
+          feature = new PowderPatch();
+        } else {
+          feature = getRandomFeature();
+        }
         feature.x = GaperGap.utils.getRandomInt(0,size);
         feature.y = GaperGap.utils.getRandomInt(0,size);
         addFeature(feature);
@@ -1051,6 +1086,8 @@ var Section = function(size, density, coords) {
         return new Cliff();
       case 2:
         return new Jump();
+      case 3:
+        return new PowderPatch();
       default:
         return new Tree();
     }
@@ -1209,6 +1246,26 @@ var Jump = function() {
 
   return jump;
 };
+var PowderPatch = function() {
+  var patch = new createjs.Bitmap(GaperGap.assets['powder-patch']);
+  patch.type = 'powder';
+
+  patch.hit = function(player, collision) {
+    if (!player.airborne) {
+      player.sink(this);
+    }
+  };
+
+  patch.__defineGetter__('hitArea', function(){
+    return patch;
+  });
+
+  patch.__defineGetter__('background', function(){
+    return patch;
+  });
+
+  return patch;
+};
 var Cliff = function(variant) {
   variant = variant || 'cliff-'+GaperGap.utils.getRandomInt(1,1);
   var cliff = new createjs.Bitmap(GaperGap.assets[variant]);
@@ -1331,6 +1388,7 @@ var GaperGap = (function(){
       {src:"tree_1.png", id:"tree-1"},
       {src:"tree_2.png", id:"tree-2"},
       {src:"tree_3.png", id:"tree-3"},
+      {src:"powder_patch.png", id:"powder-patch"},
       {src:"cliff_1.png", id:"cliff-1"},
       {src:"cliff_massive.png", id:"cliff-massive"},
       {src:"jump_small.png", id:"jump-s"},
