@@ -15,7 +15,7 @@
 // Parent Game Logic
 var GaperGap = (function(){
 
-  var _maxWidth = 800;
+  var _maxWidth = 1000;
   var _maxHeight = 600;
 
   var gapergap = {
