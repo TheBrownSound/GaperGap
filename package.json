@@ -1,0 +1,13 @@
+{
+  "name": "GaperGap",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheBrownSound/GaperGap.git"
+  },
+  "author": "Jarad Comingdeer",
+  "bugs": {
+    "url": "https://github.com/TheBrownSound/GaperGap/issues"
+  },
+  "homepage": "https://github.com/TheBrownSound/GaperGap"
+}
