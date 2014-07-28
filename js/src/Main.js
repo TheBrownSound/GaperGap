@@ -14,6 +14,10 @@
 
 // Parent Game Logic
 var GaperGap = (function(){
+
+  var _maxWidth = 800;
+  var _maxHeight = 600;
+
   var gapergap = {
     utils: new Utils()
   };
@@ -53,9 +57,12 @@ var GaperGap = (function(){
   }
 
   function sizeCanvas() {
-    stage.canvas.width = window.innerWidth;
-    stage.canvas.height = window.innerHeight;
-    
+    var topMargin = (window.innerHeight > _maxHeight) ? (window.innerHeight-_maxHeight)/2 : 0;
+    console.log('top margin: ', topMargin);
+    stage.canvas.style.marginTop = topMargin+'px';
+    stage.canvas.width = (window.innerWidth > _maxWidth) ? _maxWidth : window.innerWidth;
+    stage.canvas.height = (window.innerHeight > _maxHeight) ? _maxHeight : window.innerHeight;
+
     gapergap.dispatchEvent({type:'stageResized', width:stage.canvas.width, height:stage.canvas.height});
   }
 
@@ -138,10 +145,10 @@ var GaperGap = (function(){
 
   $(document).ready(function(){
     console.log('DOCUMENT READY');
-    
+
     if ('ontouchstart' in window) { // mobile stuff
       $('body').addClass('touch');
-      
+
       $('left-turn').bind('touchstart', function(){
         console.log('rawr');
         gapergap.dispatchEvent({type:'onKeyDown', key:"touch-left"});
