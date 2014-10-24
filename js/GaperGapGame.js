@@ -1118,12 +1118,15 @@ var Section = function(size, density, coords) {
   if (coords.y < 0) {
     sectionType = "sky";
   } else {
+    /*
     var switcher = GaperGap.utils.getRandomInt(0,10);
+
     if (switcher == 10) {
       sectionType = "massive-cliff";
     } else if (switcher == 9) {
       sectionType = "powder-field";
     }
+    */
   }
 
   populateSection(sectionType);
@@ -1162,8 +1165,6 @@ var Section = function(size, density, coords) {
         return new Cliff();
       case 2:
         return new Jump();
-      case 3:
-        return new PowderStash();
       default:
         return new Tree();
     }
@@ -1233,6 +1234,7 @@ var Section = function(size, density, coords) {
 
   return section;
 };
+
 var Tree = function() {
   var hitSize = 40;
   var hasBeenHit = false;
