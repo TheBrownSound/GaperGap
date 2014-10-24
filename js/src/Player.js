@@ -83,7 +83,7 @@ var Player = function() {
       _airAngle = false;
       _airSpeed = 0;
     }
-    
+
     var accel = 90-(Math.abs(angle));
     accel = Math.round(accel * 10) / 1000; // decreases number/decimal for animation
     _speed += accel;
@@ -130,16 +130,15 @@ var Player = function() {
       turnSpeed = 2;
     }
     _turnAngle += (_turnMomentum/_acceleration)*turnSpeed;
-    
-    /*
+
+
     if (!player.airborne) {
       if (_turnAngle > _maxTurnAngle) {
         _turnAngle = _maxTurnAngle;
       } else if (_turnAngle < -_maxTurnAngle) {
         _turnAngle = -_maxTurnAngle;
       }
-    } else*/
-    if (_turnAngle < -180) {
+    } else if (_turnAngle < -180) {
       _turnAngle = 180; // basically for 360s
     } else if (_turnAngle > 180) {
       _turnAngle = -180; // basically for 360s
@@ -267,7 +266,7 @@ var Player = function() {
       }
 
       _verticalMomentum -= _gravity; // apply gravity after air
-      
+
       if (_drop > 0) {
         _drop += _verticalMomentum;
         if (_drop <= 0) {
