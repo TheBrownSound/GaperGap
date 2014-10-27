@@ -10,4 +10,4 @@ watch:
 	fuse -i $(sourceFile) -o $(outputDir)$(name).js -w
 
 server:
-	python -m SimpleHTTPServer
+	python -m SimpleHTTPServer 2000

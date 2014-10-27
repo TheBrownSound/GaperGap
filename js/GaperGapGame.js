@@ -671,13 +671,13 @@ var Player = function() {
       return;
     } else if (player.airborne) {
       _speed = _airSpeed;
-    } else if (_airAngle !== false) {
+    } else if (_airAngle !== false) { // just landed
       //TODO Might want to handle angle difference to adjust landing speed
       // If going the reverse direction, swap the speed to match for landing
       if ( (_airSpeed > 0 && Math.abs(angle) > 90) || (_airSpeed < 0 && Math.abs(angle) < 90) ) {
         _speed = -_speed;
       }
-      // just landed, reset the air angle
+      //reset the air angle
       _airAngle = false;
       _airSpeed = 0;
     }
@@ -736,10 +736,10 @@ var Player = function() {
       } else if (_turnAngle < -_maxTurnAngle) {
         _turnAngle = -_maxTurnAngle;
       }
-    } else if (_turnAngle < -180) {
-      _turnAngle = 180; // basically for 360s
+    } else if (_turnAngle < -180) { // reset angles while doing 360s
+      _turnAngle = 180;
     } else if (_turnAngle > 180) {
-      _turnAngle = -180; // basically for 360s
+      _turnAngle = -180;
     }
     return _turnAngle;
   }
