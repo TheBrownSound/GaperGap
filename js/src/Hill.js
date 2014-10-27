@@ -81,7 +81,7 @@ var Hill = function(player){
       col: Math.floor(-_xPos/section_size),
       row: Math.floor(-_yPos/section_size)
     };
-    
+
     // hillDebugMarker.graphics.clear().beginStroke('#F00').drawRect(visibleHill.x,visibleHill.y,visibleHill.width, visibleHill.height);
     var visibleSections = getVisibleSections();
 
@@ -91,12 +91,12 @@ var Hill = function(player){
         addSection(gridPosition.column, gridPosition.row);
       }
     }
-    
+
     for (var section in sections) {
-      // check if section is higher than the screen, if it is remove it!
       var sect = sections[section];
 
-      if (sect.y+section_size < (-_height/2) ) {
+      // check if section is higher than the screen, if it is remove it!
+      if (sect.y+section_size < (_height*-2) ) {
         console.log("removing section");
         removeSection(sect);
         delete sections[section];
