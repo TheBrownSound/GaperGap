@@ -1,6 +1,7 @@
 var Section = function(size, density, coords) {
-  density = density || 10;
+  density = (undefined) ? 10 : density;
   var section = {};
+  var sectionTypes = [];
   var _x = 0;
   var _y = 0;
   var _location = {
@@ -8,54 +9,32 @@ var Section = function(size, density, coords) {
     y: coords.y || 0
   };
 
-  console.log('coords:', coords);
-
   var _features = [];
   var _foreground = new createjs.Container();
   var _background = new createjs.Container();
   var trackShape = new createjs.Shape();
-  //var debugOutline = new createjs.Shape();
-  //debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
+  var debugOutline = new createjs.Shape();
+
+  debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
+  _background.addChild(debugOutline);
 
   //_background.addChild(trackShape);
-  //trackShape.alpha = 0.3;
+  // trackShape.alpha = 0.3;
 
-  //_background.addChild(debugOutline);
-
-  var sectionType = "default";
   if (coords.y < 0) {
-    sectionType = "sky";
-  } else {
-    /*
-    var switcher = GaperGap.utils.getRandomInt(0,10);
-
-    if (switcher == 10) {
-      sectionType = "massive-cliff";
-    } else if (switcher == 9) {
-      sectionType = "powder-field";
-    }
-    */
+    sectionTypes.push("sky");
   }
 
-  populateSection(sectionType);
+  populateSection(sectionTypes);
 
-  function populateSection(type) {
-    console.log("section:type", type);
-    if (type === 'sky') {
+  function populateSection(types) {
+    console.log("section:type", types);
+    if ( types.indexOf('sky') >= 0 ) {
       var sky = new createjs.Bitmap(GaperGap.assets['sky']);
       _background.addChild(sky);
-    } else if (type === 'massive-cliff') {
-      var cliff = new Cliff("cliff-massive");
-      cliff.x = cliff.y = size/2;
-      addFeature(cliff);
     } else {
       while (_features.length < density) {
-        var feature;
-        if (type === "powder-field") {
-          feature = new PowderStash();
-        } else {
-          feature = getRandomFeature();
-        }
+        var feature = getRandomFeature();
         feature.x = GaperGap.utils.getRandomInt(0,size);
         feature.y = GaperGap.utils.getRandomInt(0,size);
         addFeature(feature);

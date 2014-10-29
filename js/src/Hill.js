@@ -95,13 +95,13 @@ var Hill = function(player){
     for (var section in sections) {
       var sect = sections[section];
 
-      // check if section is higher than the screen, if it is remove it!
-      if (sect.y+section_size < (_height*-2) ) {
+      if (sect.y+section_size < (_height*-2) ) { // check if section is higher than the screen, if it is remove it!
         console.log("removing section");
         removeSection(sect);
         delete sections[section];
-      } else {
+      } else { // check collision in section
         /*
+        // skier snow tracks
         if (section == currentSection.col+"_"+currentSection.row) {
           var playerLoc = this.localToLocal(0,0, sectionWrapper);
           console.log(playerLoc.y);

@@ -50,7 +50,7 @@ var GaperGap = (function(){
     stage.addChild(game);
 
     //Ticker
-    createjs.Ticker.setFPS(60);
+    createjs.Ticker.setFPS(64);
     createjs.Ticker.addEventListener("tick", tick);
 
     sizeCanvas();

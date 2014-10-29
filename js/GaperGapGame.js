@@ -4,19 +4,19 @@ var Utils = function() {
 
   utils.getTotalSpeed = function(xSpeed, ySpeed) {
     return Math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed);
-  }
+  };
 
   utils.getRandomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+  };
 
   utils.getRandomFloat = function(min, max) {
     return Math.random() * (max - min) + min;
-  }
+  };
 
   utils.yesNo = function() {
     return (this.getRandomInt(0,1) == 1) ? true:false;
-  }
+  };
 
   utils.removeFromArray = function(array, item) {
     var itemIndex = array.indexOf(item);
@@ -25,10 +25,11 @@ var Utils = function() {
       return true;
     }
     return false;
-  }
+  };
 
   return utils;
 };
+
 var Game = function() {
   var game = new createjs.Container();
   var momentum = {x: 0, y: 0};
@@ -1005,13 +1006,13 @@ var Hill = function(player){
     for (var section in sections) {
       var sect = sections[section];
 
-      // check if section is higher than the screen, if it is remove it!
-      if (sect.y+section_size < (_height*-2) ) {
+      if (sect.y+section_size < (_height*-2) ) { // check if section is higher than the screen, if it is remove it!
         console.log("removing section");
         removeSection(sect);
         delete sections[section];
-      } else {
+      } else { // check collision in section
         /*
+        // skier snow tracks
         if (section == currentSection.col+"_"+currentSection.row) {
           var playerLoc = this.localToLocal(0,0, sectionWrapper);
           console.log(playerLoc.y);
@@ -1091,8 +1092,9 @@ var Hill = function(player){
 };
 
 var Section = function(size, density, coords) {
-  density = density || 10;
+  density = (undefined) ? 10 : density;
   var section = {};
+  var sectionTypes = [];
   var _x = 0;
   var _y = 0;
   var _location = {
@@ -1100,54 +1102,32 @@ var Section = function(size, density, coords) {
     y: coords.y || 0
   };
 
-  console.log('coords:', coords);
-
   var _features = [];
   var _foreground = new createjs.Container();
   var _background = new createjs.Container();
   var trackShape = new createjs.Shape();
-  //var debugOutline = new createjs.Shape();
-  //debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
+  var debugOutline = new createjs.Shape();
+
+  debugOutline.graphics.beginStroke("#F00").drawRect(0, 0, size, size).endStroke();
+  _background.addChild(debugOutline);
 
   //_background.addChild(trackShape);
-  //trackShape.alpha = 0.3;
+  // trackShape.alpha = 0.3;
 
-  //_background.addChild(debugOutline);
-
-  var sectionType = "default";
   if (coords.y < 0) {
-    sectionType = "sky";
-  } else {
-    /*
-    var switcher = GaperGap.utils.getRandomInt(0,10);
-
-    if (switcher == 10) {
-      sectionType = "massive-cliff";
-    } else if (switcher == 9) {
-      sectionType = "powder-field";
-    }
-    */
+    sectionTypes.push("sky");
   }
 
-  populateSection(sectionType);
+  populateSection(sectionTypes);
 
-  function populateSection(type) {
-    console.log("section:type", type);
-    if (type === 'sky') {
+  function populateSection(types) {
+    console.log("section:type", types);
+    if ( types.indexOf('sky') >= 0 ) {
       var sky = new createjs.Bitmap(GaperGap.assets['sky']);
       _background.addChild(sky);
-    } else if (type === 'massive-cliff') {
-      var cliff = new Cliff("cliff-massive");
-      cliff.x = cliff.y = size/2;
-      addFeature(cliff);
     } else {
       while (_features.length < density) {
-        var feature;
-        if (type === "powder-field") {
-          feature = new PowderStash();
-        } else {
-          feature = getRandomFeature();
-        }
+        var feature = getRandomFeature();
         feature.x = GaperGap.utils.getRandomInt(0,size);
         feature.y = GaperGap.utils.getRandomInt(0,size);
         addFeature(feature);
@@ -1406,7 +1386,7 @@ var GaperGap = (function(){
     stage.addChild(game);
 
     //Ticker
-    createjs.Ticker.setFPS(60);
+    createjs.Ticker.setFPS(64);
     createjs.Ticker.addEventListener("tick", tick);
 
     sizeCanvas();
